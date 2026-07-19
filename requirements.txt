@@ -1,0 +1,49 @@
+# rsllm
+# Copyright (c) 2026 ItzRustam
+# SPDX-License-Identifier: BSD-3-Clause
+
+# Core API
+fastapi
+uvicorn[standard]
+
+# Configuration
+python-dotenv
+pydantic
+pydantic-settings
+
+# LangChain Core
+langchain
+langchain-core
+langchain-community
+
+# LLM Providers
+langchain-openai
+langchain-google-genai
+langchain-mistralai
+langchain-huggingface
+langchain-groq
+
+# HTTP Client
+httpx
+aiohttp
+
+# Async Utilities
+anyio
+
+# Data Validation / Serialization - MayBe Needed
+typing-extensions
+
+# Security
+python-multipart
+cryptography
+
+# Logging
+loguru
+
+# Testing
+pytest
+pytest-asyncio
+
+# Code Quality
+ruff
+black
