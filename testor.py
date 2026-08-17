@@ -8,7 +8,7 @@ auth_test()
 auth_test(master_key="blablabla")
 
 # Case #3 - Invalid key
-auth_test(master_key="rsllm_invalid_token")
+auth_test(master_key="RSRoute_invalid_token")
 
 # Case #4 - Valid Key
-auth_test(master_key="rsllm_xxxxxxx") # Hidded the Key.
+auth_test(master_key="RSRoute_xxxxxxx") # Hidded the Key.

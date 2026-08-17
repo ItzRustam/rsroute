@@ -1,10 +1,10 @@
-# rsllm
+# RSRoute
 > Self-hostable FastAPI gateway providing a unified REST API for multiple LLM providers powered by LangChain.
 
 
-## Why rsllm?
+## Why RSRoute?
 
-Without rsllm:
+Without RSRoute:
 
 Project A:  
     ├── Setup Mistral client  
@@ -22,19 +22,19 @@ Project C:
     └── Repeat everything again...  
 
 
-With rsllm:
+With RSRoute:
 
         Project A
         Project B
         Project C
             |
             v
-          rsllm
+          RSRoute
             |
             v
        LLM Providers
 
-## What rsllm provides
+## What RSRoute provides
 
 - Centralized API key management
 - Unified access to multiple LLM providers

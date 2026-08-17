@@ -1,52 +1,52 @@
-# rsllm
+# RSRoute
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
-"BaseErrors for rsllm"
+"BaseErrors for RSRoute"
 
-class RSLLMError(Exception):
-    """Base exception for all rsllm exceptions."""
+class RSRouteError(Exception):
+    """Base exception for all RSRoute exceptions."""
 
     pass
 
 
-class AuthenticationError(RSLLMError):
+class AuthenticationError(RSRouteError):
     """Raised when authentication fails."""
 
     pass
 
 
-class InvalidMasterKey(RSLLMError):
+class InvalidMasterKey(RSRouteError):
     """Raised when the master key format is invalid."""
 
     pass
 
 
-class UnsupportedProvider(RSLLMError):
+class UnsupportedProvider(RSRouteError):
     """Raised when an unsupported provider is requested."""
 
     pass
 
 
-class ProviderNotConfigured(RSLLMError):
+class ProviderNotConfigured(RSRouteError):
     """Raised when a provider is not configured."""
 
     pass
 
 
-class InvalidRequest(RSLLMError):
+class InvalidRequest(RSRouteError):
     """Raised when a request is invalid."""
 
     pass
 
 
-class ProviderConnectionError(RSLLMError):
+class ProviderConnectionError(RSRouteError):
     """Raised when a provider cannot be reached."""
 
     pass
 
 
-class GenerationError(RSLLMError):
+class GenerationError(RSRouteError):
     """Raised when text generation fails."""
 
     pass

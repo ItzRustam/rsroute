@@ -1,4 +1,4 @@
-# rsllm
+# RSRoute
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -17,17 +17,17 @@ def auth(master_key : str = None) -> bool:
     if master_key is None:
         raise AuthenticationError("Invalid `master_key`, `None`")
     
-    if not(master_key.startswith("rsllm_")):
-        raise InvalidMasterKey("given master_key should start with `rsllm_`.")
+    if not(master_key.startswith("RSRoute_")):
+        raise InvalidMasterKey("given master_key should start with `RSRoute_`.")
     
-    # Will handle not start rsllm_ & Empty Password both at once.
-    if not(os.getenv("RSLLM_MASTER_KEY").startswith("rsllm_")):
-        raise InvalidMasterKey("Master Key is not started with `rsllm_`, try to edit `.env`")
+    # Will handle not start RSRoute_ & Empty Password both at once.
+    if not(os.getenv("RSRoute_MASTER_KEY").startswith("RSRoute_")):
+        raise InvalidMasterKey("Master Key is not started with `RSRoute_`, try to edit `.env`")
     
-    if len(os.getenv("RSLLM_MASTER_KEY")) < 12:
+    if len(os.getenv("RSRoute_MASTER_KEY")) < 12:
         raise InvalidMasterKey("Master Key can't be smaller than 6. (12)")
     
-    if master_key == os.getenv("RSLLM_MASTER_KEY"):
+    if master_key == os.getenv("RSRoute_MASTER_KEY"):
         return True # Able to Login.
     else:
         raise AuthenticationError("Invalid `master_key`. Input correct `master_key`")
