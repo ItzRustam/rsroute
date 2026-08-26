@@ -1,0 +1,20 @@
+name: RSRoute Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: Docker Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Build Docker image
+        run: docker build -t rsroute-tests .
+
+      - name: Run tests
+        run: docker run --rm rsroute-tests
