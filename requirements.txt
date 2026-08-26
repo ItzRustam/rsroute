@@ -39,6 +39,7 @@ cryptography
 
 # Logging
 loguru
+colorlog
 
 # Testing
 pytest
