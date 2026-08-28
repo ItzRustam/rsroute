@@ -1,3 +1,7 @@
+# RSRoute
+# Copyright (c) 2026 ItzRustam
+# SPDX-License-Identifier: BSD-3-Clause
+
 from .auth_tests import auth_test
 from .logger import get_logger
 
