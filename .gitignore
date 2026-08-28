@@ -17,6 +17,8 @@ env/
 
 # Environment Variables
 # .env
+keys.env
+# Keys without breaking docker pipeline from .env.example
 
 
 # Python Build
