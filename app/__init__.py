@@ -4,8 +4,8 @@
 
 from . import Errors
 from . import auth
-from . import llm
+from . import providers
 
 
-__all__ = ["Errors", "auth", "llm"]
+__all__ = ["Errors", "auth", "providers"]
 
