@@ -33,18 +33,9 @@ anyio
 # Data Validation / Serialization - MayBe Needed
 typing-extensions
 
-# Security
-python-multipart
 cryptography
 
-# Logging
-loguru
 colorlog
 
-# Testing
-pytest
-pytest-asyncio
 
-# Code Quality
-ruff
-black
+rich
