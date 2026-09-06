@@ -24,8 +24,8 @@ def auth(master_key : str = None) -> bool:
     if not(os.getenv("RSRoute_MASTER_KEY").startswith("RSRoute_")):
         raise InvalidMasterKey("Master Key is not started with `RSRoute_`, try to edit `.env`")
     
-    if len(os.getenv("RSRoute_MASTER_KEY")) < 12:
-        raise InvalidMasterKey("Master Key can't be smaller than 6. (12)")
+    if len(os.getenv("RSRoute_MASTER_KEY")) < 14:
+        raise InvalidMasterKey("Master Key can't be smaller than 6. (14)")
     
     if master_key == os.getenv("RSRoute_MASTER_KEY"):
         return True # Able to Login.
