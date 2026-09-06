@@ -4,6 +4,7 @@
 
 from typing import Optional
 import os
+from app.Errors import *
 
 # v1 Providers
 _OPEN_AI_API_KEY = "OPENAI_API_KEY"
@@ -12,6 +13,7 @@ _HF_TOKEN = "HUGGINGFACEHUB_API_TOKEN"
 _OPENROUTER_KEY = "OPENROUTER_API_KEY"
 _GEMINI_KEY = "GOOGLE_API_KEY"
 _GROQ_API_KEY = "GROQ_API_KEY"
+SUPPORTED_PROVIDERS = [_OPEN_AI_API_KEY, _OPENROUTER_KEY, _HF_TOKEN, _MISTRALAI_KEY, _GEMINI_KEY, _GROQ_API_KEY]
 
 # Config Idea Credit
 # https://github.com/fnnx-ai/scikit-llm
@@ -101,3 +103,18 @@ class RSRouteConfig:
     
             """  
             os.environ[_GROQ_API_KEY] = key
+
+
+def is_api(api_keyword : str):
+    """Function to Test if API exits on .env or not."""
+
+    # Unsupported Provider
+    if api_keyword not in SUPPORTED_PROVIDERS:
+        raise UnsupportedProvider(f"{api_keyword} is not supported, only {SUPPORTED_PROVIDERS} are supported")
+
+    # If api does not exits
+    if not os.getenv(api_keyword):
+        return False
+
+    # else api exits
+    return True

@@ -4,15 +4,18 @@
 
 import sys
 
+# Test Casses
 from tests import auth_test
 from tests import get_logger
 from tests import api_config_test
+from tests import test_mistral
 
 logger = get_logger(__name__)
 
 
 def auth_testing():
-    logger.info("Running auth test suite")
+    # logger.info("Running auth test suite")
+    print("=========== Running auth test suite ===========")
 
     logger.info("Test Case #1 - No master_key")
     result = auth_test()
@@ -31,13 +34,15 @@ def auth_testing():
 
     if result == "Auth Done.":
         logger.info("Test Case #4 Passed.")
+        print("=========== All Test Case Passed 4/4 ===========")
         return True
 
     logger.error("Test Case #4 Failed with correct master key.")
     return False
 
 def api_config_testing():
-    logger.info("Running API config TestCases.")
+    # logger.info("Running API config TestCases.")
+    print("=========== Running API config TestCases ===========")
 
     logger.info("Test Case #1 - Invalid Provider")
     val, result = api_config_test(provider="qwen", key="my_key404xd")
@@ -97,15 +102,63 @@ def api_config_testing():
         logger.error("Test Case #7 `OpenRouter Provider` Failed.")
         return False
 
-    logger.info("============ All Test Case Passed 7/7 =================")
+    print("=========== All Test Case Passed 7/7 ===========")
     return True
     
+def mistral_testing():
+    FAKE_KEY = "my_mistral_key"
+    # logger.info("Running MistralAI TestCases with fake api.")
+    print("=========== Running MistralAI TestCases with Fake API ===========")
 
+    logger.info("TestCase #1 - KEY & prompt both None.")
+    val, result = test_mistral()
+    logger.debug(f"case #1 result - {result}")
+    if not(val):
+        logger.error(f"TestCase #1 Failed.")
+        return False
+
+    logger.info("TestCase #2 - prompt = None")
+    val, result = test_mistral(KEY=FAKE_KEY)
+    logger.debug(f"case #2 result - {result}")
+    if not(val):
+        logger.error("TestCase #2 Failed.")
+        return False
+
+    logger.info("TestCase #3 - valid value with real_api=False")
+    val, result = test_mistral(KEY=FAKE_KEY, prompt="hey", real_api=False)
+    logger.debug(f"case #3 result - {result}")
+    if not(val):
+        logger.error("TestCase #3 Failed.")
+        return False
+
+    logger.info("TestCase #4 - valid value with real_api=True with fake api")
+    val, result = test_mistral(KEY=FAKE_KEY, prompt="hey", real_api=True)
+    logger.debug(f"case #4 result - {result}")
+    if val != False:
+        logger.error("TestCase #4 Failed.")
+        return False
+
+    print("=========== All Test Case Passed 4/4 ===========")
+
+    # Secret Test case only for prod testing with real_api key
+
+    # val, result = test_mistral(KEY="actual_api_key", prompt="Hello!", real_api=True)
+    # print(val, result)
+
+    
+    # if val:
+    #     logger.info("testCase passed with real api key")
+    #     return True
+    # else:
+    #     return False # Else API didn't worked or internel things crashed
+
+    return True # End if no secret key test
 
 def main():
     results = []
     results.append(auth_testing()) # Auth Test Case
     results.append(api_config_testing()) # API config Test Case
+    results.append(mistral_testing()) # Mistral provider testing
 
     return all(results) # Return False if any Test Case Failed
     
