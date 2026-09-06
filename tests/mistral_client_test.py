@@ -32,4 +32,4 @@ def test_mistral(KEY : str = None, prompt : str = None, real_api = False):
     else:
         if not(real_api): # BUG then
             return False, "Unexpected Error Occur."
-        return True, e
+        return True, output
