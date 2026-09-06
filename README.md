@@ -44,9 +44,11 @@ With RSRoute:
 
 ## you know you can click on that star on corner and make it golden try it out :)
 
+```
 @software{RSRoute,
-  author = {Rustam Bhadouriya},
+  author = {Rustam Bhadouriya (ItzRustam)},
   year = {2026},
   title = {RSRoute: Unified API Routing for Large Language Model Providers},
   url = {https://github.com/ItzRustam/RSRoute}
 }
+```
