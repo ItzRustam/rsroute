@@ -142,7 +142,7 @@ def mistral_testing():
 
     # Secret Test case only for prod testing with real_api key
 
-    # val, result = test_mistral(KEY="WBVPRGAmBlZs2XMTjZr64QxUkmeW9PuP", prompt="Hello!", real_api=True)
+    # val, result = test_mistral(KEY="actual_api_key", prompt="Hello!", real_api=True)
     # print(val, result)
 
     
