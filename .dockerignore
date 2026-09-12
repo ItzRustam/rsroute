@@ -42,3 +42,6 @@ Thumbs.db
 
 # Mypy
 .mypy_cache/
+
+# docker compiled tar files
+*.tar
