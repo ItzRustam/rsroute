@@ -1,11 +1,11 @@
-from app.providers import MistralAI
+from app.providers import ChatGemini
 from app.Errors import InvalidRequest
 
 "NOTE: Test Function only on Fake API_KEY, Already tested on Real Mistral API key."
-def test_mistral(KEY : str = None, query : str = None, real_api = False):
+def test_gemini(KEY : str = None, query : str = None, real_api = False):
     # Model Initlize
     try:
-        model = MistralAI(api_key=KEY, max_retries=0)
+        model = ChatGemini(api_key=KEY)
 
     except InvalidRequest as ir:
         return True, ir
