@@ -37,8 +37,12 @@ mistral_model = ChatMistralAI(
 
 from langchain_mistralai import ChatMistralAI
 from app.Errors import *
-from dotenv import load_dotenv
 from typing import Any, Dict
+
+"""
+TODO
+Add Embedding Model Support
+"""
 
 """Class MistralAI Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 class MistralAI:
@@ -61,7 +65,7 @@ class MistralAI:
         if api_key is None:
             raise InvalidRequest(f"API key is not given.")
 
-        self.Model = ChatMistralAI(model_name=model, temperature=temperature, max_tokens=max_tokens, random_seed=random_seed,
+        self.__model = ChatMistralAI(model_name=model, temperature=temperature, max_tokens=max_tokens, random_seed=random_seed,
                             top_p=top_p, stop=stop, base_url=end_point, timeout=timeout, max_retries=max_retries, max_concurrent_requests=max_concurrent_requests, api_key=api_key)
 
         # Saving model initlize parameters
@@ -78,13 +82,16 @@ class MistralAI:
             "max_concurrent_requests" : max_concurrent_requests
         }
 
-    def generate(self, prompt : Any = None):
-        "invoke function for MistralAI class"
-        if prompt == None:
-            raise InvalidRequest(f"`prompt` is given `None`")
+    def generate(self, query : Any = None):
+        """Generate response on given `query`"""
+        if query is None:
+            raise InvalidRequest(f"`query` is given `None`")
         
-        return self.Model.invoke(prompt)
+        return self.__model.invoke(input=query)
 
     def get_params(self):
         "get params on class initlize"
         return self.__params
+
+    def __call__(self, query : Any = None):
+        return self.generate(query=query)

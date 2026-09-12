@@ -9,6 +9,7 @@ from tests import auth_test
 from tests import get_logger
 from tests import api_config_test
 from tests import test_mistral
+from tests import test_gemini
 
 logger = get_logger(__name__)
 
@@ -110,14 +111,14 @@ def mistral_testing():
     # logger.info("Running MistralAI TestCases with fake api.")
     print("=========== Running MistralAI TestCases with Fake API ===========")
 
-    logger.info("TestCase #1 - KEY & prompt both None.")
+    logger.info("TestCase #1 - KEY & query both None.")
     val, result = test_mistral()
     logger.debug(f"case #1 result - {result}")
     if not(val):
         logger.error(f"TestCase #1 Failed.")
         return False
 
-    logger.info("TestCase #2 - prompt = None")
+    logger.info("TestCase #2 - query = None")
     val, result = test_mistral(KEY=FAKE_KEY)
     logger.debug(f"case #2 result - {result}")
     if not(val):
@@ -125,14 +126,14 @@ def mistral_testing():
         return False
 
     logger.info("TestCase #3 - valid value with real_api=False")
-    val, result = test_mistral(KEY=FAKE_KEY, prompt="hey", real_api=False)
+    val, result = test_mistral(KEY=FAKE_KEY, query="hey", real_api=False)
     logger.debug(f"case #3 result - {result}")
     if not(val):
         logger.error("TestCase #3 Failed.")
         return False
 
     logger.info("TestCase #4 - valid value with real_api=True with fake api")
-    val, result = test_mistral(KEY=FAKE_KEY, prompt="hey", real_api=True)
+    val, result = test_mistral(KEY=FAKE_KEY, query="hey", real_api=True)
     logger.debug(f"case #4 result - {result}")
     if val != False:
         logger.error("TestCase #4 Failed.")
@@ -142,7 +143,55 @@ def mistral_testing():
 
     # Secret Test case only for prod testing with real_api key
 
-    # val, result = test_mistral(KEY="actual_api_key", prompt="Hello!", real_api=True)
+    # val, result = test_mistral(KEY="actual_api_key", query="Hello!", real_api=True)
+    # print(val, result)
+
+    
+    # if val:
+    #     logger.info("testCase passed with real api key")
+    #     return True
+    # else:
+    #     return False # Else API didn't worked or internel things crashed
+
+    return True # End if no secret key test
+
+def gemini_testing():
+    FAKE_KEY = "my_gemini_key"
+    print("=========== Running ChatGemini TestCases with Fake API ===========")
+
+    logger.info("TestCase #1 - KEY & query both None.")
+    val, result = test_gemini()
+    logger.debug(f"case #1 result - {result}")
+    if not(val):
+        logger.error(f"TestCase #1 Failed.")
+        return False
+
+    logger.info("TestCase #2 - query = None")
+    val, result = test_gemini(KEY=FAKE_KEY)
+    logger.debug(f"case #2 result - {result}")
+    if not(val):
+        logger.error("TestCase #2 Failed.")
+        return False
+
+    logger.info("TestCase #3 - valid value with real_api=False")
+    val, result = test_gemini(KEY=FAKE_KEY, query="hey", real_api=False)
+    logger.debug(f"case #3 result - {result}")
+    if not(val):
+        logger.error("TestCase #3 Failed.")
+        return False
+
+    logger.info("TestCase #4 - valid value with real_api=True with fake api")
+    val, result = test_gemini(KEY=FAKE_KEY, query="hey", real_api=True)
+    logger.debug(f"case #4 result - {result}")
+    if val != False:
+        logger.error("TestCase #4 Failed.")
+        return False
+
+    print("=========== All Test Case Passed 4/4 ===========")
+
+    # Secret Test case only for prod testing with real_api key
+
+    # val, result = test_gemini(KEY="actual_api_key", query="Hello!", real_api=True)
     # print(val, result)
 
     
@@ -159,6 +208,7 @@ def main():
     results.append(auth_testing()) # Auth Test Case
     results.append(api_config_testing()) # API config Test Case
     results.append(mistral_testing()) # Mistral provider testing
+    results.append(gemini_testing()) # gemini Testing
 
     return all(results) # Return False if any Test Case Failed
     
