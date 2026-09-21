@@ -2,7 +2,7 @@
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
-# NOTE: gemini client supports ChatModel and Embedding Model both.
+# TODO: Add Embedding Model support.
 
 """
 NOTE: langchain-google-genai version used = 4.4.0 and langchain update may cause problems to create issues please.
@@ -56,7 +56,37 @@ class ChatGemini:
         thinking_level : str = None,
         thinking_budget : int = None
     ):
-        # TODO: Doc Strings
+        """Integration with Google Gemini via Langchain.
+
+        This class provides a wrapper around Langchain's `ChatGoogleGenerativeAI` to simplify
+        interaction with Gemini's model endpoints. It abstracts away the configuration of connection
+        settings, model parameters, and query handling.
+
+        Attributes:
+            __model (ChatGoogleGenerativeAI): Instance of Langchain's `ChatGoogleGenerativeAI` configured with
+                the specified parameters.
+            __params (Dict[Any, Any]): Dictionary containing the parameters used to initialize
+                the model, useful for debugging or introspection.
+
+        Raises:
+            InvalidRequest: If `api_key` is not provided during initialization.
+
+        Example:
+            Initialize the Gemini client with a specific model and API key:
+            ```python
+            llm = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfjysduyrwhjhruwfy_hsdgfhjdf_FAKE_API_KEY_BTW")
+            response = llm("What is the capital of France?")
+            ```
+
+        Usage:
+            - Create an instance of `ChatGemini` with desired parameters.
+            - Call the instance like a function to generate responses.
+            - Utilize `get_params()` to retrieve the initialization parameters.
+
+        Note:
+            The class currently supports text-to-text generation and does not expose
+            advanced streaming or additional model keyword arguments.
+        """
 
         if api_key is None:
             raise InvalidRequest(f"API key is not given.")
@@ -88,11 +118,31 @@ class ChatGemini:
     response = model("wtf")
     """
     def __call__(self, query : Any = None):
-        """Generate response on given `query`"""
+        """Generate response on given `query`.
+
+        Args:
+            query (Any): The input prompt or query to generate a response for.
+
+        Returns:
+            str: The generated response from Gemini.
+
+        Raises:
+            InvalidRequest: If `query` is not provided.
+        """
         return self.generate(query=query)
 
     def generate(self, query : Any = None):
-        """Generate response on given `query`"""
+        """Generate response on given `query`.
+
+        Args:
+            query (Any): The input prompt or query to generate a response for.
+
+        Returns:
+            str: The generated response from Gemini.
+
+        Raises:
+            InvalidRequest: If `query` is not provided.
+        """
         if query is None:
             raise InvalidRequest(f"`query` is given `None`")
 
