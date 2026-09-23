@@ -18,11 +18,6 @@ load_dotenv() # Loading Environment
 # AUTH ENABLE or DISABLE
 AUTH_ENABLE = auth_exits() # True, False
 
-if os.getenv("GOOGLE_API_KEY"):
-    pass # Key Passed
-else:
-    raise InvalidAPIkey("`GOOGLE_API_KEY` have not provided.")
-
 
 
 """TESTING CODE"""
@@ -62,6 +57,12 @@ def chat(query : str = "Hello",
     else:
         pass
         # pass your Time without a password to your APIs
+
+    if os.getenv("GOOGLE_API_KEY"):
+        pass # Key Passed
+    else:
+        response = ResponseTemplate(content="GInvalid Request", error="No Google API Key Found, try to edit `.env`", login=LOGIN, query=query, auth=AUTH_ENABLE)
+        return response.model_dump()
     
 
     model : ChatGemini = ChatGemini(api_key=os.getenv("GOOGLE_API_KEY"),
