@@ -5,6 +5,7 @@
 """Test running FastAPI server"""
 from app.server import create_server
 import requests as rq
+from pprint import pprint
 
 """
 NOTE:
@@ -31,7 +32,25 @@ safety_settings
 """
 
 URL = "http://0.0.0.0:8000" 
-DATA = {"query" : "Hello?"}
+DATA = {"query" : "What is GitHub?", 
+        "master_key": "RSRoute_my_key", 
+        "model": "gemini-3.5-flash-lite", 
+        "max_tokens": 2048, 
+        "top_p": 1.0, 
+        "end_point" : None, 
+        "thinking_level": None,
+        "thinking_budget": None}
+
+# Without Master Key (WMK) or Wrong Master Key
+DATA_WMK = {"query" : "Hello?", 
+        "master_key": "dsfjkhsdf,sdaf", 
+        "model": "gemini-3.5-flash-lite", 
+        "max_tokens": 2048, 
+        "top_p": 1.0, 
+        "end_point" : None, 
+        "thinking_level": None,
+        "thinking_budget": None}
+
 
 def check_status(status_code):
     if int(status_code) == 200:
@@ -44,7 +63,7 @@ class check_server:
     Server Checker
     --------------
 
-    Check server on ``URL`` & ``DATA``
+    Checks server on ``URL`` & ``DATA``
 
     Available Routes Test
     ----------------------
@@ -52,12 +71,18 @@ class check_server:
     """
 
     @staticmethod
-    def check_gemini():
-        response = rq.post(url=f"{URL}/v1/gemini/chat", data=DATA)
+    def check_gemini_with_key():
+        response = rq.post(url=f"{URL}/v1/gemini/chat", params=DATA)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_gemini_without_key():
+        response = rq.post(url=f"{URL}/v1/gemini/chat", params=DATA_WMK)
         return check_status(status_code=response.status_code), response.json()
 
 if __name__ == "__main__":
-    status, output = check_server.check_gemini()
+    status, output = check_server.check_gemini_with_key()
     print(status)
-    print(output)
+    pprint(output)
+    
         
