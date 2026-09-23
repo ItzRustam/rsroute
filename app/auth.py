@@ -4,10 +4,9 @@
 
 "Authrectication for Master_key if ENABLE_AUTH=TRUE"
 
-from dotenv import load_dotenv
+
 import os
 from app.Errors import *
-load_dotenv()
 
 def auth_exits() -> bool:
     auth_enabled = os.getenv("ENABLE_AUTH", "false").lower() == "true"
