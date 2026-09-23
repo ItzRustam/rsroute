@@ -39,6 +39,7 @@ service_tier: Sets processing priority ('standard', 'priority', or 'flex').
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from app.Errors import *
 from typing import Any, Dict
+from langchain.messages import AIMessage
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
@@ -55,7 +56,7 @@ class ChatGemini:
         end_point : str = None,
         thinking_level : str = None,
         thinking_budget : int = None
-    ):
+    ) -> AIMessage:
         # TODO: Doc Strings
 
         if api_key is None:

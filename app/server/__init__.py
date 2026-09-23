@@ -3,9 +3,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """server route connector for diffrent diffrent provider"""
+# NOTE: server doesn't support Tool Binding/calling
 from .gemini_route import router as g_route # gemini_route
 
 from fastapi import FastAPI
+
 
 def create_server() -> FastAPI:
     """
