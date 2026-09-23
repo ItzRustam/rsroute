@@ -8,8 +8,9 @@ from .exceptions import (AuthenticationError,
                         InvalidMasterKey,
                         UnsupportedProvider,
                         ProviderNotConfigured,
-                        InvalidRequest)
+                        InvalidRequest,
+                        InvalidAPIkey)
 __all__ = ["AuthenticationError", "GenerationError", "ProviderConnectionError", "InvalidMasterKey",
-           "UnsupportedProvider", "ProviderNotConfigured", "InvalidRequest"
+           "UnsupportedProvider", "ProviderNotConfigured", "InvalidRequest", "InvalidAPIkey"
            ]
 

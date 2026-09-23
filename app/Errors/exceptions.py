@@ -21,6 +21,10 @@ class InvalidMasterKey(RSRouteError):
 
     pass
 
+class InvalidAPIkey(RSRouteError):
+    """Raised when the API key is Invalid or Not Given"""
+    pass
+
 
 class UnsupportedProvider(RSRouteError):
     """Raised when an unsupported provider is requested."""
