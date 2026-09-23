@@ -10,6 +10,9 @@ from tests import get_logger
 from tests import api_config_test
 from tests import test_mistral
 from tests import test_gemini
+from dotenv import load_dotenv
+load_dotenv()
+
 
 logger = get_logger(__name__)
 
