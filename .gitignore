@@ -50,3 +50,10 @@ Thumbs.db
 
 # docker compiled tar files
 *.tar
+
+# Postman configs
+.postman/*
+
+# pycharm
+*.idea
+.idea/*
