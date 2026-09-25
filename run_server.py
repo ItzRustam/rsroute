@@ -6,13 +6,17 @@
 
 from app.server import create_server
 import uvicorn # Run the Server
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
 
 server = create_server()
 
 if __name__ == "__main__":
     uvicorn.run(
         server,
-        host="0.0.0.0",
-        port=8000
+        host=os.getenv("HOST"),
+        port=int(os.getenv("PORT"))
     )    
 
