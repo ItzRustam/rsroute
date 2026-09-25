@@ -3,9 +3,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Test running FastAPI server"""
+import os
+
 from app.server import create_server
 import requests as rq
-from pprint import pprint
+from rich import print as pprint # pretty print
+from typing import Dict
 
 """
 NOTE:
@@ -31,10 +34,11 @@ thinking_level,
 safety_settings
 """
 
-URL = "http://0.0.0.0:8000" 
+URL = f"http://{os.getenv('HOST')}:{os.getenv('PORT')}"
 DATA = {"query" : "What is GitHub?", 
         "master_key": "RSRoute_my_key", 
-        "model": "gemini-3.5-flash-lite", 
+        "model": "gemini-3.5-flash-lite",
+        "temperature" : 0.7,
         "max_tokens": 2048, 
         "top_p": 1.0, 
         "end_point" : None, 
@@ -43,13 +47,19 @@ DATA = {"query" : "What is GitHub?",
 
 # Without Master Key (WMK) or Wrong Master Key
 DATA_WMK = {"query" : "Hello?", 
-        "master_key": "dsfjkhsdf,sdaf", 
-        "model": "gemini-3.5-flash-lite", 
+        "master_key": "RSRoute_WRONG_KEY",
+        "model": "gemini-3.5-flash-lite",
+        "temperature" : 0.7,
         "max_tokens": 2048, 
         "top_p": 1.0, 
         "end_point" : None, 
         "thinking_level": None,
         "thinking_budget": None}
+
+END_POINTS : Dict[str, str] = {
+    "gemini" : f"{URL}/v1/gemini",
+    "mistral" : f"{URL}/v1/mistral",
+}
 
 
 def check_status(status_code):
@@ -72,17 +82,43 @@ class check_server:
 
     @staticmethod
     def check_gemini_with_key():
-        response = rq.post(url=f"{URL}/v1/gemini/chat", params=DATA)
+        response = rq.post(url=f"{END_POINTS['gemini']}/chat", params=DATA)
         return check_status(status_code=response.status_code), response.json()
 
     @staticmethod
     def check_gemini_without_key():
-        response = rq.post(url=f"{URL}/v1/gemini/chat", params=DATA_WMK)
+        response = rq.post(url=f"{END_POINTS['gemini']}/chat", params=DATA_WMK)
         return check_status(status_code=response.status_code), response.json()
 
+    @staticmethod
+    def check_mistral_with_key():
+        data = DATA.copy()
+        # Deleting useless parameter
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        response = rq.post(url=f"{END_POINTS['mistral']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_mistral_without_key():
+        data = DATA_WMK.copy()
+        # Deleting useless parameter
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        response = rq.post(url=f"{END_POINTS['mistral']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+
 if __name__ == "__main__":
-    status, output = check_server.check_gemini_with_key()
+    """Use Function to check server."""
+    status, output = check_server.check_gemini_without_key()
     print(status)
     pprint(output)
-    
-        
+
+    status, output = check_server.check_mistral_without_key()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_mistral_with_key()
+    print(status)
+    pprint(output)
