@@ -35,6 +35,17 @@ mistral_model = ChatMistralAI(
 
 """
 
+"""     
+        INFO
+Parameter removed
+* random_seed
+* stop
+* max_concurrent_requests
+* max_retries
+* timeout
+
+"""
+
 from langchain_mistralai import ChatMistralAI
 from app.Errors import *
 from typing import Any, Dict
@@ -52,34 +63,28 @@ class MistralAI:
         model : str = "mistral-small-2603",
         temperature : float = 0.7,
         max_tokens : int = 2048,
-        random_seed : int = 67,
         top_p : int = 1.0,
-        stop = None,
 
         # Base url
         end_point : str = None,
-        timeout : int = 120,
-        max_retries : int = 5,
-        max_concurrent_requests : int = 64
     ):
         if api_key is None:
             raise InvalidRequest(f"API key is not given.")
 
-        self.__model = ChatMistralAI(model_name=model, temperature=temperature, max_tokens=max_tokens, random_seed=random_seed,
-                            top_p=top_p, stop=stop, base_url=end_point, timeout=timeout, max_retries=max_retries, max_concurrent_requests=max_concurrent_requests, api_key=api_key)
+        self.__model = ChatMistralAI(model_name=model,
+                                     temperature=temperature,
+                                     max_tokens=max_tokens,
+                                     top_p=top_p,
+                                     base_url=end_point,
+                                     api_key=api_key)
 
         # Saving model initlize parameters
         self.__params : Dict[Any] = {
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
-            "random_seed" : random_seed,
             "top_p" : top_p,
-            "stop" : stop,
             "end_point" : end_point, # base_url,
-            "timeout" : timeout,
-            "max_retries" : max_retries,
-            "max_concurrent_requests" : max_concurrent_requests
         }
 
     def generate(self, query : Any = None):

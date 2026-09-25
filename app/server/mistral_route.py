@@ -1,0 +1,84 @@
+# RSRoute
+# Copyright (c) 2026 ItzRustam
+# SPDX-License-Identifier: BSD-3-Clause
+
+"""Purpose: saprate Mistral Route from Other's route."""
+from sqlalchemy.sql.coercions import expect
+
+"""TODO: /embed end point for embedding models"""
+
+from app.providers import MistralAI
+from fastapi import APIRouter
+from app.Errors import *
+from dotenv import load_dotenv
+import os
+from app.auth import auth_exits, auth
+from app.server.tools import ResponseTemplate, convertResponse
+
+load_dotenv()  # Loading Environment
+
+# AUTH ENABLE or DISABLE
+AUTH_ENABLE = auth_exits()  # True, False
+
+"""TESTING CODE"""
+router = APIRouter(
+    prefix="/v1/mistral",
+    tags=["MistralAI"]
+)
+
+
+@router.post("/chat")
+def chat(query: str = "Hello",
+         master_key: str = "",
+         model: str = "mistral-small-2603",
+         temperature: float = 0.7,
+         max_tokens: int = 2048,
+         top_p: int = 1.0,
+         # Base url
+         end_point: str = None,
+         ):
+    # Base Initlization
+    LOGIN = False
+    ERROR = "No Error Found"
+    if AUTH_ENABLE:
+        try:
+            LOGIN = auth(master_key=master_key)
+        except Exception as E:
+            LOGIN = False
+            ERROR = str(E)
+            # Return Auth Error
+            response = ResponseTemplate(content="Authentication Failed", error=ERROR, login=LOGIN, query=query,
+                                        auth=AUTH_ENABLE)
+            return response.model_dump()
+
+    else:
+        pass
+        # pass your Time without a password to your APIs
+
+    if os.getenv("MISTRAL_API_KEY"):
+        pass  # Key Passed
+    else:
+        response = ResponseTemplate(content="Invalid Request", error="No MistralAI API Key Found, try to edit `.env`",
+                                    login=LOGIN, query=query, auth=AUTH_ENABLE)
+        return response.model_dump()
+
+    model: MistralAI = MistralAI(api_key=os.getenv("MISTRAL_API_KEY"),
+                                 model=model,
+                                 temperature=temperature,
+                                 max_tokens=max_tokens,
+                                 top_p=top_p,
+                                 end_point=end_point,
+                                 )
+
+    try:
+        result = model(query)  # getting result
+    except Exception as E:
+        response = ResponseTemplate(content="Request Error", error=str(E),
+                                    login=LOGIN, query=query, auth=AUTH_ENABLE)
+
+        return response.model_dump()
+    else:
+        # output for request
+        return convertResponse(response=result, query=query, error=ERROR, auth=AUTH_ENABLE, login=LOGIN,
+                               initlized_params=model.get_params())
+
