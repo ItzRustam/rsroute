@@ -68,6 +68,39 @@ class MistralAI:
         # Base url
         end_point : str = None,
     ):
+
+        """Integration with MistralAI via Langchain.
+
+        This class provides a wrapper around Langchain's `ChatMistralAI` to simplify
+        interaction with MistralAI's model endpoints. It abstracts away the configuration
+        of connection settings, model parameters, and query handling.
+
+        Attributes:
+            __model (ChatMistralAI): Instance of Langchain's `ChatMistralAI` configured with
+                the specified parameters.
+            __params (Dict[Any]): Dictionary containing the parameters used to initialize
+                the model, useful for debugging or introspection.
+
+        Raises:
+            InvalidRequest: If `api_key` is not provided during initialization.
+
+        Example:
+            Initialize the MistralAI client with a specific model and API key:
+            ```python
+            llm = MistralAI(model="mistral-small", api_key="my_mistral_api_key")
+            response = llm("What is Langchain?")
+            ```
+
+        Usage:
+            - Create an instance of `MistralAI` with desired parameters.
+            - Call the instance like a function to generate responses.
+            - Utilize `get_params()` to retrieve the initialization parameters.
+
+        Note:
+            The class currently supports text-to-text generation and does not expose
+            advanced streaming or additional model keyword arguments.
+        """
+
         if api_key is None:
             raise InvalidRequest(f"API key is not given.")
 
@@ -88,15 +121,49 @@ class MistralAI:
         }
 
     def generate(self, query : Any = None):
-        """Generate response on given `query`"""
+        """Generate response on given `query`.
+
+        Args:
+            query (Any): The input prompt or query to generate a response for.
+
+        Returns:
+            str: The generated response from MistralAI.
+
+        Raises:
+            InvalidRequest: If `query` is not provided.
+        """
         if query is None:
             raise InvalidRequest(f"`query` is given `None`")
         
         return self.__model.invoke(input=query)
 
     def get_params(self):
-        "get params on class initlize"
+        """Get the parameters used during initialization.
+
+        Returns:
+            Dict[Any]: A dictionary containing the initialization parameters.
+        """
         return self.__params
 
+    """Example:
+        model = MistralAI(model="mistral-small", api_key="my_mistral_api_key")
+        response = model("wtf")
+    """
     def __call__(self, query : Any = None):
+        """Generate response on given `query`.
+
+        Args:
+            query (Any): The input prompt or query to generate a response for.
+
+        Returns:
+            str: The generated response from MistralAI.
+
+        Raises:
+            InvalidRequest: If `query` is not provided.
+        """
         return self.generate(query=query)
+
+
+if __name__ == "__main__":
+    llm = MistralAI(model="mistral-small", api_key="mistral_key_pls")
+    response = llm(query="Hello? how are the Decoder Style Transformer Architecture are built?")

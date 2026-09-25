@@ -2,17 +2,44 @@
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
-"Authrectication for Master_key if ENABLE_AUTH=TRUE"
+"""Authentication utilities for RSRoute.
+
+Provides functions to check if authentication is enabled globally and to verify a given
+master key against the configured master key.
+"""
 
 
 import os
 from app.Errors import *
 
 def auth_exits() -> bool:
+    """
+    Determine if authentication is enabled.
+
+    Returns:
+        bool: ``True`` if `ENABLE_AUTH` environment variable is set to ``true`` (case-insensitive);
+        otherwise ``False``.
+    """
+
     auth_enabled = os.getenv("ENABLE_AUTH", "false").lower() == "true"
     return auth_enabled
 
 def auth(master_key : str = None) -> bool:
+    """
+    Verify the provided master key against the configured master key.
+
+    Args:
+        master_key (str, optional): The master key to authenticate. Must start with ``RSRoute_``.
+            If not provided, raises ``AuthenticationError``.
+    
+    Returns:
+        bool: ``True`` if the provided `master_key` matches the configured ``RSRoute_MASTER_KEY``.
+    
+    Raises:
+        AuthenticationError: When `master_key` is ``None`` or does not start with ``RSRoute_``.
+        InvalidMasterKey: When `master_key` does not match the configured ``RSRoute_MASTER_KEY``.
+    """
+
     if master_key is None:
         raise AuthenticationError("Invalid `master_key`, `None`")
     
