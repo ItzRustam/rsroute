@@ -61,7 +61,7 @@ def chat(query : str = "Hello",
     if os.getenv("GOOGLE_API_KEY"):
         pass # Key Passed
     else:
-        response = ResponseTemplate(content="GInvalid Request", error="No Google API Key Found, try to edit `.env`", login=LOGIN, query=query, auth=AUTH_ENABLE)
+        response = ResponseTemplate(content="Invalid Request", error="No Google API Key Found, try to edit `.env`", login=LOGIN, query=query, auth=AUTH_ENABLE)
         return response.model_dump()
     
 
@@ -74,8 +74,17 @@ def chat(query : str = "Hello",
                        thinking_budget=thinking_budget,
                        thinking_level=thinking_level)
 
-    result = model(query) # getting result
+    try:
+        result = model(query)  # getting result
+    except Exception as E:
+        response = ResponseTemplate(content="Request Error", error=str(E),
+                                    login=LOGIN, query=query, auth=AUTH_ENABLE)
 
-    # output for request
-    return convertResponse(response=result, query=query, error=ERROR, auth=AUTH_ENABLE, login=LOGIN, initlized_params=model.get_params())
+        return response.model_dump()
+    else:
+        # output for request
+        return convertResponse(response=result, query=query, error=ERROR, auth=AUTH_ENABLE, login=LOGIN,
+                               initlized_params=model.get_params())
+
+
 
