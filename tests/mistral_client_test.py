@@ -5,7 +5,7 @@ from app.Errors import InvalidRequest
 def test_mistral(KEY : str = None, query : str = None, real_api = False):
     # Model Initlize
     try:
-        model = MistralAI(api_key=KEY, max_retries=0)
+        model = MistralAI(api_key=KEY)
 
     except InvalidRequest as ir:
         return True, ir
