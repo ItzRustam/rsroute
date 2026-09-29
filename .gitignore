@@ -53,6 +53,7 @@ Thumbs.db
 
 # Postman configs
 .postman/*
+postman/*
 
 # pycharm
 *.idea
