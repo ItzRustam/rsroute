@@ -5,9 +5,19 @@
 """Helpful tools for server to improve code reusability"""
 
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 from langchain.messages import AIMessage
 
+# NOTE: Do not use it directly, always make .copy() and then edit/send.
+PARAMS_INFO : Dict[str, str] = {
+    "query": "Input to Model",
+    "master_key": "rsroute key, mandatory to send response, change it in `.env`",
+    "model": "Model name",
+    "temperature": "Model creativity scale from 0.0 to 1.0 default is 0.7. Mid-Creative",
+    "max_token": "Maximum Tokens To generate in each request",
+    "top_p": "Nucleus sampling token selection boundary (0.0 to 1.0)",
+    "end_point": "Custom url to connect to model."
+}
 
 class ResponseTemplate(BaseModel):
     """FastAPI server response Template."""

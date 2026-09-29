@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 import os
 from app.auth import auth_exits, auth
 from app.server.tools import ResponseTemplate, convertResponse
+from app.server.tools import PARAMS_INFO
 
 load_dotenv() # Loading Environment
 
@@ -20,11 +21,18 @@ AUTH_ENABLE = auth_exits() # True, False
 
 
 
-"""TESTING CODE"""
+
 router = APIRouter(
     prefix="/v1/gemini",
     tags=["Gemini", "Google"]
 )
+
+@router.get("/parameter")
+def parameters() -> dict:
+    params = PARAMS_INFO.copy()
+    params["thinking_budget"] = " configure the token limits for reasoning and chain-of-thought processing in supported Google Gemini models"
+    params["thinking_level"] = " parameter allows you to control the depth of reasoning tokens that Gemini 3+ models generate before producing a final answer."
+    return params
 
 @router.post("/chat")
 def chat(query : str = "Hello", 

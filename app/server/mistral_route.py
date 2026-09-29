@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Purpose: saprate Mistral Route from Other's route."""
-from sqlalchemy.sql.coercions import expect
 
 """TODO: /embed end point for embedding models"""
 
@@ -14,17 +13,23 @@ from dotenv import load_dotenv
 import os
 from app.auth import auth_exits, auth
 from app.server.tools import ResponseTemplate, convertResponse
+from app.server.tools import PARAMS_INFO
 
 load_dotenv()  # Loading Environment
 
 # AUTH ENABLE or DISABLE
 AUTH_ENABLE = auth_exits()  # True, False
 
-"""TESTING CODE"""
+
 router = APIRouter(
     prefix="/v1/mistral",
     tags=["MistralAI"]
 )
+
+@router.get("/parameter")
+def parameters() -> dict:
+    params = PARAMS_INFO.copy()
+    return params
 
 
 @router.post("/chat")

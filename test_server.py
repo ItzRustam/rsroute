@@ -41,9 +41,10 @@ DATA = {"query" : "What is GitHub?",
         "temperature" : 0.7,
         "max_tokens": 2048, 
         "top_p": 1.0, 
-        "end_point" : None, 
+        "end_point" : None,
         "thinking_level": None,
-        "thinking_budget": None}
+        "thinking_budget": None
+        }
 
 # Without Master Key (WMK) or Wrong Master Key
 DATA_WMK = {"query" : "Hello?", 
@@ -108,10 +109,23 @@ class check_server:
         response = rq.post(url=f"{END_POINTS['mistral']}/chat", params=data)
         return check_status(status_code=response.status_code), response.json()
 
+    @staticmethod
+    def check_gemini_params():
+        response = rq.get(url=f"{END_POINTS['gemini']}/parameter")
+        return check_status(status_code=response.status_code), response.json()
 
+    @staticmethod
+    def check_mistral_params():
+        response = rq.get(url=f"{END_POINTS['mistral']}/parameter")
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_root():
+        response = rq.get(url=f"{URL}/")
+        return check_status(status_code=response.status_code), response.json()
 if __name__ == "__main__":
     """Use Function to check server."""
-    status, output = check_server.check_gemini_without_key()
+    status, output = check_server.check_gemini_with_key()
     print(status)
     pprint(output)
 
@@ -120,5 +134,13 @@ if __name__ == "__main__":
     pprint(output)
 
     status, output = check_server.check_mistral_with_key()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_gemini_params()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_root()
     print(status)
     pprint(output)

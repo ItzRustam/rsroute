@@ -2,7 +2,7 @@
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
-# For TestCases
+# For Running Server
 
 FROM python:3.14-slim
 
@@ -16,4 +16,4 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "test_runner.py"]
+CMD ["python", "run_docker_server.py"]

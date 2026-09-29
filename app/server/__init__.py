@@ -4,6 +4,7 @@
 
 """server route connector for diffrent diffrent provider"""
 # NOTE: server doesn't support Tool Binding/calling
+from .root import router as root_router
 from .gemini_route import router as g_route # gemini_route
 from .mistral_route import  router as m_route # mistral_route
 from fastapi import FastAPI
@@ -31,7 +32,9 @@ def create_server() -> FastAPI:
         title="RSRoute"
     )
 
+    server.include_router(root_router) # Root Route
     server.include_router(g_route) # Gemini Router Added
     server.include_router(m_route) # MistralAI Router Added
+
 
     return server # return FastAPI server.
