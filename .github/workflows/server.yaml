@@ -1,0 +1,32 @@
+name: RSRoute Server Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    name: Build & Validate Production Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Production Docker image
+        run: docker build -f Dockerfile.server -t rsroute-server:latest .
+
+      - name: Run Production Container Smoke Test
+        run: |
+          docker run -d \
+            --name rsroute-prod-instance \
+            -p 8000:8000 \
+            rsroute-server:latest
+          
+          echo "⏳ Waiting for FastAPI server to spin up..."
+          sleep 5
+          
+          echo "🔍 Checking container health logs..."
+          docker logs rsroute-prod-instance
