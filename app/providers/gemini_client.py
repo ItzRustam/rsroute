@@ -38,8 +38,12 @@ service_tier: Sets processing priority ('standard', 'priority', or 'flex').
 
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from app.Errors import *
-from typing import Any, Dict
+from typing import Any, Dict, List
 from langchain.messages import AIMessage
+from langchain_core.tools import BaseTool
+from langchain.agents import create_agent
+from langchain_core.messages import BaseMessage, HumanMessage
+from rich import print as rprint # useful while debugging
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
@@ -113,6 +117,8 @@ class ChatGemini:
                                               thinking_level=thinking_level,
                                               thinking_budget=thinking_budget,
                                               google_api_key=api_key)
+    #     Agentic Model
+        self.__agent = None # Agent will be changed with model.bind_tools()
 
     # auto call
     """Example:
@@ -132,6 +138,33 @@ class ChatGemini:
             InvalidRequest: If `query` is not provided.
         """
         return self.generate(query=query)
+
+    def generate_from_agent(self, query : str | List[BaseMessage] = None) -> AIMessage:
+        """Generate response from agent on given `query`.
+            Args:
+                query (str or List of HumanMessage and SystemPrompt or ChatHistory): The input prompt or query to generate a response for.
+
+                Returns:
+                    str: The generated response from Gemini.
+
+                Raises:
+                    InvalidRequest: If `query` is not provided.
+                """
+        if query is None:
+            raise InvalidRequest(f"`query` is given `None`")
+
+
+        if isinstance(query, str): # Check for str to convert into HumanMessage with List
+            query = [HumanMessage(content=query)]
+
+        result = self.__agent.invoke({
+            "messages": query
+        })
+
+        rprint(result)
+
+        return result["messages"][-1]
+
 
     def generate(self, query : Any = None):
         """Generate response on given `query`.
@@ -154,6 +187,18 @@ class ChatGemini:
         "Model initialized parameters"
         return self.__params
 
+
+    "Deprecated: Architecture Changed and this version failed."
+    def bind_tools(self, tools : List[BaseTool]) -> None:
+        """Bind tools to `GeminiClient`."""
+        if all(isinstance(tool, BaseTool) for tool in tools):
+            pass
+        else:
+            raise InvalidRequest(f"`tools` is not a `BaseTool`")
+        self.__agent = create_agent(
+            model=self.__model,
+            tools=tools,
+        )
 
 if __name__ == "__main__":
     llm = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfjysduyrwhjhruwfy_hsdgfhjdf_FAKE_API_KEY_BTW")

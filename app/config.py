@@ -21,7 +21,7 @@ SUPPORTED_PROVIDERS = [_OPEN_AI_API_KEY, _OPENROUTER_KEY, _HF_TOKEN, _MISTRALAI_
 
 # When To use
 
-# Use full when Library mood
+# Useful when Library mood
 # changing `.env` is recommended
 # Useful only when changing to quick new API key.
 # DO NOT USE THIS CLASS ON PROD FASTAPI SERVER
