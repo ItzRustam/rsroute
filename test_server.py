@@ -129,11 +129,7 @@ if __name__ == "__main__":
     print(status)
     pprint(output)
 
-    status, output = check_server.check_mistral_without_key()
-    print(status)
-    pprint(output)
-
-    status, output = check_server.check_mistral_with_key()
+    status, output = check_server.check_gemini_without_key()
     print(status)
     pprint(output)
 
@@ -142,5 +138,17 @@ if __name__ == "__main__":
     pprint(output)
 
     status, output = check_server.check_root()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_mistral_with_key()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_mistral_without_key()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_mistral_params()
     print(status)
     pprint(output)

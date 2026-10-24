@@ -21,10 +21,11 @@ def root():
             "description": "Home Page for FastAPI Server",
             "routes": {
                 "Google Gemini": {
+                    "description": "Connect to Google Gemini with agentic powers.",
                     "ChatModel": "/v1/gemini/chat",
                     "EmbeddingModel": "Coming Soon",
                     "ParameterInfo": "/v1/gemini/parameter",
-                    "support tools": False,
+                    "support tools": True,
                 },
                 "MistralAI": {
                     "ChatModel": "/v1/mistral/chat",

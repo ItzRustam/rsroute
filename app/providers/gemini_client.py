@@ -187,6 +187,8 @@ class ChatGemini:
         "Model initialized parameters"
         return self.__params
 
+
+    "Deprecated: Architecture Changed and this version failed."
     def bind_tools(self, tools : List[BaseTool]) -> None:
         """Bind tools to `GeminiClient`."""
         if all(isinstance(tool, BaseTool) for tool in tools):
