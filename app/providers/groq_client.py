@@ -20,13 +20,6 @@ from langchain_groq import ChatGroq as _LangchainChatGroq
 from app.Errors import *
 from typing import Any, Dict, Tuple
 
-# Only these Groq models are allowed, nothing else.
-# NOTE: `qwen/qwen3.8-27b` is a *preview* model on Groq (not for production use).
-GROQ_MODELS: Tuple[str, ...] = (
-    "openai/gpt-oss-120b",
-    "openai/gpt-oss-20b",
-    "qwen/qwen3.8-27b",
-)
 DEFAULT_GROQ_MODEL = "openai/gpt-oss-120b"
 
 """Class ChatGroq Does not supports `Streaming` & model_kwargs. supports only text-to-text"""
@@ -68,8 +61,6 @@ class ChatGroq:
         if api_key is None:
             raise InvalidRequest("API key is not given.")
 
-        if model not in GROQ_MODELS:
-            raise InvalidRequest(f"Model `{model}` is not allowed, only {list(GROQ_MODELS)} are supported.")
 
         self.__model = _LangchainChatGroq(model=model,
                                           temperature=temperature,
