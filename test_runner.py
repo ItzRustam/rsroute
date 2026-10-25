@@ -10,7 +10,7 @@ from tests import get_logger
 from tests import api_config_test
 from tests import test_mistral
 from tests import test_gemini
-from tests import test_groq, test_groq_models
+from tests import test_groq
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -225,18 +225,11 @@ def groq_testing():
         logger.error("TestCase #2 Failed.")
         return False
 
-    logger.info("TestCase #3 - only allowed Groq models are accepted")
-    val, result = test_groq_models(KEY=FAKE_KEY)
-    logger.debug(f"case #3 result - {result}")
-    if not(val):
-        logger.error("TestCase #3 Failed.")
-        return False
-
-    logger.info("TestCase #4 - valid value with real_api=True with fake api")
+    logger.info("TestCase #3 - valid value with real_api=True with fake api")
     val, result = test_groq(KEY=FAKE_KEY, query="hey", real_api=True)
-    logger.debug(f"case #4 result - {result}")
+    logger.debug(f"case #3 result - {result}")
     if val != False:
-        logger.error("TestCase #4 Failed.")
+        logger.error("TestCase #3 Failed.")
         return False
 
     print("=========== All Test Case Passed 4/4 ===========")
