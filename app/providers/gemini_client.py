@@ -38,7 +38,7 @@ service_tier: Sets processing priority ('standard', 'priority', or 'flex').
 
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from app.Errors import *
-from typing import Any, Dict
+from typing import Any, Dict, List
 from langchain.messages import AIMessage
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
@@ -154,6 +154,90 @@ class ChatGemini:
         "Model initialized parameters"
         return self.__params
 
+
+class GeminiAgent:
+    def __init__(
+        self,
+        api_key : str = None,
+        model : str = "gemini-3.5-flash-lite",
+        temperature : float = 0.7,
+        max_tokens : int = 2048,
+        top_p : int = 1.0,
+
+        # Base url
+        end_point : str = None,
+        thinking_level : str = None,
+        thinking_budget : int = None,
+
+        tools_info : List[Dict[str, str]] = None
+    ) -> AIMessage:
+        
+        if api_key is None:
+            raise InvalidRequest(f"API key is not given.")
+
+        if tools_info is None:
+            raise InvalidRequest(f"No Tool given to Agent Edition")
+
+        # Parameter Holding
+        self.__params : Dict[Any, Any] = {
+            "model" : model,
+            "temperature" : temperature,
+            "max_tokens" : max_tokens,
+            "top_p" : top_p,
+            "end_point" : end_point,
+            "thinking_level" : thinking_level,
+            "thinking_budget": thinking_budget
+        }
+
+        # Hidden Chat Model
+        self.__model = ChatGoogleGenerativeAI(model=model,
+                                              temperature=temperature,
+                                              max_tokens=max_tokens,
+                                              top_p=top_p,
+                                              base_url=end_point,
+                                              thinking_level=thinking_level,
+                                              thinking_budget=thinking_budget,
+                                              google_api_key=api_key)
+
+    # auto call
+    """Example:
+    model = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfu37jhkdflkjhfa73")
+    response = model("wtf")
+    """
+    def __call__(self, query : Any = None):
+        """Generate response on given `query`.
+
+        Args:
+            query (Any): The input prompt or query to generate a response for.
+
+        Returns:
+            str: The generated response from Gemini.
+
+        Raises:
+            InvalidRequest: If `query` is not provided.
+        """
+        return self.generate(query=query)
+
+    def generate(self, query : Any = None):
+        """Generate response on given `query`.
+
+        Args:
+            query (Any): The input prompt or query to generate a response for.
+
+        Returns:
+            str: The generated response from Gemini.
+
+        Raises:
+            InvalidRequest: If `query` is not provided.
+        """
+        if query is None:
+            raise InvalidRequest(f"`query` is given `None`")
+
+        return self.__model.invoke(input=query)
+
+    def get_params(self):
+        "Model initialized parameters"
+        return self.__params
 
 if __name__ == "__main__":
     llm = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfjysduyrwhjhruwfy_hsdgfhjdf_FAKE_API_KEY_BTW")

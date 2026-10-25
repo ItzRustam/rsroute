@@ -14,6 +14,8 @@ from app.auth import auth_exits, auth
 from app.server.tools import ResponseTemplate, convertResponse
 from app.server.tools import PARAMS_INFO
 
+from typing import Dict, Any, List
+
 load_dotenv() # Loading Environment
 
 # AUTH ENABLE or DISABLE
@@ -47,6 +49,71 @@ def chat(query : str = "Hello",
         end_point : str = None,
         thinking_level : str = None,
         thinking_budget : int = None
+        ):
+    
+    # Base Initlization
+    LOGIN = False
+    ERROR = "No Error Found"
+    if AUTH_ENABLE:
+        try:
+            LOGIN = auth(master_key=master_key)
+        except Exception as E:
+            LOGIN = False
+            ERROR = str(E)
+            # Return Auth Error
+            response = ResponseTemplate(content="Authentication Failed", error=ERROR, login=LOGIN, query=query, auth=AUTH_ENABLE)
+            return response.model_dump()
+
+    else:
+        pass
+        # pass your Time without a password to your APIs
+
+    if os.getenv("GOOGLE_API_KEY"):
+        pass # Key Passed
+    else:
+        response = ResponseTemplate(content="Invalid Request", error="No Google API Key Found, try to edit `.env`", login=LOGIN, query=query, auth=AUTH_ENABLE)
+        return response.model_dump()
+    
+
+    model : ChatGemini = ChatGemini(api_key=os.getenv("GOOGLE_API_KEY"),
+                       model=model,
+                       temperature=temperature,
+                       max_tokens=max_tokens,
+                       top_p=top_p,
+                       end_point=end_point,
+                       thinking_budget=thinking_budget,
+                       thinking_level=thinking_level)
+
+    try:
+        result = model(query)  # getting result
+    except Exception as E:
+        response = ResponseTemplate(content="Request Error", error=str(E),
+                                    login=LOGIN, query=query, auth=AUTH_ENABLE)
+
+        return response.model_dump()
+    else:
+        # output for request
+        return convertResponse(response=result, query=query, error=ERROR, auth=AUTH_ENABLE, login=LOGIN,
+                               initlized_params=model.get_params())
+
+
+
+@router.post("/agent")
+def chat(query : str = "Hello", 
+        master_key : str = "", 
+        model : str = "gemini-3.5-flash-lite", 
+        temperature : float = 0.7,
+        max_tokens : int = 2048,
+
+        top_p : int = 1.0,
+        
+        # Base url
+        end_point : str = None,
+        thinking_level : str = None,
+        thinking_budget : int = None,
+
+        # Tools Info Bind
+        tools_info : List[Dict[str, str]] = None
         ):
     
     # Base Initlization
