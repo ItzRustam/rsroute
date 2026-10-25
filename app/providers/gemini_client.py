@@ -200,13 +200,53 @@ class GeminiAgent:
 
         tools_info : List[Dict[str, str]] = None
     ) -> AIMessage:
-        """Tool Info supports only from
-        [
-            {
-                "name": "name_of_tool:,
-                "description": "description"
-            }
-        ]
+        """Gemini-powered agentic wrapper with tool-binding support via Langchain.
+
+        Wraps `ChatGoogleGenerativeAI` and binds fake/stub tools to the model,
+        enabling the model to reason about and invoke external tools by name.
+        Unlike `ChatGemini`, this class is designed for agentic workflows where
+        the model decides which tool to call based on the query.
+
+        Args:
+            api_key (str): Google Gemini API credential key. Required.
+            model (str): Target Gemini model name. Defaults to ``"gemini-3.5-flash-lite"``.
+            temperature (float): Creativity/randomness control (0.0–2.0). Defaults to ``0.7``.
+            max_tokens (int): Maximum tokens to generate per response. Defaults to ``2048``.
+            top_p (float): Nucleus sampling threshold (0.0–1.0). Defaults to ``1.0``.
+            end_point (str): Custom base URL for proxy servers or API gateways. Optional.
+            thinking_level (str): Reasoning depth toggle — ``"low"``, ``"medium"``, or ``"high"``. Optional.
+            thinking_budget (int): Max tokens allocated for internal reasoning chains. Optional.
+            tools_info (List[Dict[str, str]]): List of tool definitions to bind to the agent.
+                Each entry must have ``"name"`` and ``"description"`` keys. Required.
+
+        Raises:
+            InvalidRequest: If ``api_key`` is ``None``.
+            InvalidRequest: If ``tools_info`` is ``None``, empty, not a list, or contains non-dict entries.
+
+        Example:
+            ```python
+            agent = GeminiAgent(
+                api_key="YOUR_API_KEY",
+                model="gemini-3.5-flash-lite",
+                tools_info=[
+                    {"name": "search_web", "description": "Search the web for real-time information."},
+                    {"name": "calculator",  "description": "Evaluate mathematical expressions."},
+                ]
+            )
+            response = agent("What is 42 * 7 and what's the weather in Paris?")
+            ```
+
+        Note:
+            Tools are registered as lightweight stubs — the model selects which tool to call
+            and returns ``tool_calls`` in the response, but actual tool execution happens
+            on the client side. See ``AgentTemplate`` in ``tools.py`` for the response shape.
+
+            Tool info format::
+
+                [
+                    {"name": "tool_name", "description": "What this tool does"},
+                    ...
+                ]
         """
 
         warnings.warn("For Best Agentic Experience use rsroute python package. https://www.github.com/ItzRustam/rsroute-package")
