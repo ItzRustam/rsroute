@@ -54,7 +54,7 @@ With RSRoute:
 
 ```
 @software{RSRoute,
-  author = {Rustam Bhadouriya (ItzRustam)},
+  author = {Rustam Bhadouriya (ItzRustam), gauravkvbrss6558-spec},
   year = {2026},
   title = {RSRoute: Unified API Routing for Large Language Model Providers},
   url = {https://github.com/ItzRustam/RSRoute}
