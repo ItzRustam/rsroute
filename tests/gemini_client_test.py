@@ -1,7 +1,7 @@
 from app.providers import ChatGemini
 from app.Errors import InvalidRequest
 
-"NOTE: Test Function only on Fake API_KEY, Already tested on Real Mistral API key."
+"NOTE: Test Function only on Fake API_KEY, Already tested on Real Gemini API key."
 def test_gemini(KEY : str = None, query : str = None, real_api = False):
     # Model Initlize
     try:
