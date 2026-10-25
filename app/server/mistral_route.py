@@ -7,7 +7,7 @@
 """TODO: /embed end point for embedding models"""
 
 from app.providers import MistralAI
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from app.Errors import *
 from dotenv import load_dotenv
 import os
@@ -33,14 +33,15 @@ def parameters() -> dict:
 
 
 @router.post("/chat")
-def chat(query: str = "Hello",
-         master_key: str = "",
-         model: str = "mistral-small-2603",
-         temperature: float = 0.7,
-         max_tokens: int = 2048,
-         top_p: int = 1.0,
+def chat(
+         query: str = Body("Hello"),
+         master_key: str = Body(""),
+         model: str = Body("mistral-small-2603"),
+         temperature: float = Body(0.7),
+         max_tokens: int = Body(2048),
+         top_p: float = Body(1.0),
          # Base url
-         end_point: str = None,
+         end_point: str = Body(None),
          ):
     # Base Initlization
     LOGIN = False

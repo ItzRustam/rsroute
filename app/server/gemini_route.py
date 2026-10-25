@@ -38,18 +38,17 @@ def parameters() -> dict:
     return params
 
 @router.post("/chat")
-def chat(query : str = "Hello", 
-        master_key : str = "", 
-        model : str = "gemini-3.5-flash-lite", 
-        temperature : float = 0.7,
-        max_tokens : int = 2048,
-
-        top_p : int = 1.0,
-        
+def chat(
+        query : str = Body("Hello"),
+        master_key : str = Body(""),
+        model : str = Body("gemini-3.5-flash-lite"),
+        temperature : float = Body(0.7),
+        max_tokens : int = Body(2048),
+        top_p : float = Body(1.0),
         # Base url
-        end_point : str = None,
-        thinking_level : str = None,
-        thinking_budget : int = None
+        end_point : str = Body(None),
+        thinking_level : str = Body(None),
+        thinking_budget : int = Body(None)
         ):
     
     # Base Initlization
@@ -112,7 +111,7 @@ def chat(query : str = "Hello",
 #     thinking_budget: Optional[int] = None
 #     tools_info: Optional[List[Dict[str, str]]] = None
 
-@router.get("/agent")
+@router.post("/agent")
 def agent(
     query: str = Body("Hello"), 
     master_key: str = Body(""), 

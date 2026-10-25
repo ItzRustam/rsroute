@@ -23,6 +23,7 @@ def root():
                 "Google Gemini": {
                     "description": "Connect to Google Gemini with agentic powers.",
                     "ChatModel": "/v1/gemini/chat",
+                    "Agent": "/v1/gemini/agent",
                     "EmbeddingModel": "Coming Soon",
                     "ParameterInfo": "/v1/gemini/parameter",
                     "support tools": True,
