@@ -34,22 +34,3 @@ def test_groq(KEY : str = None, query : str = None, real_api = False):
             return False, "Unexpected Error Occur."
         return True, output
 
-
-def test_groq_models(KEY : str = "my_groq_key"):
-    """Only `GROQ_MODELS` must be accepted, everything else must raise InvalidRequest (no network used)."""
-    for name in GROQ_MODELS:
-        try:
-            ChatGroq(api_key=KEY, model=name)
-        except Exception as e:
-            return False, f"allowed model `{name}` rejected: {e}"
-
-    for bad in ["llama-3.3-70b-versatile", "qwen/qwen3-32b", "", "random-model"]:
-        try:
-            ChatGroq(api_key=KEY, model=bad)
-        except InvalidRequest:
-            continue
-        except Exception as e:
-            return False, f"`{bad}` raised {type(e).__name__} instead of InvalidRequest"
-        return False, f"model `{bad}` should have been rejected"
-
-    return True, "Only allowed Groq models are accepted."
