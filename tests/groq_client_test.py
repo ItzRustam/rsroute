@@ -1,5 +1,4 @@
 from app.providers import ChatGroq
-from app.providers.groq_client import GROQ_MODELS
 from app.Errors import InvalidRequest
 
 "NOTE: Test Function only on Fake API_KEY."
