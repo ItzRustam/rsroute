@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from .mistral_client import MistralAI
-from .gemini_client import ChatGemini
+from .gemini_client import ChatGemini, GeminiAgent
 from .groq_client import ChatGroq
 
-__all__ = ["MistralAI", "ChatGemini", "ChatGroq"]
+__all__ = ["MistralAI", "ChatGemini", "ChatGroq", "GeminiAgent"]
 
 """Parameters for Each Function Call
 model_name

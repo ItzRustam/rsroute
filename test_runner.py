@@ -9,8 +9,18 @@ from tests import auth_test
 from tests import get_logger
 from tests import api_config_test
 from tests import test_mistral
-from tests import test_gemini
+from tests import test_gemini, test_gemini_agent
 from tests import test_groq
+from tests.gemini_agent_test import (
+    case_tools_none,
+    case_tools_empty_list,
+    case_tools_wrong_type_string,
+    case_tools_wrong_type_int,
+    case_tools_wrong_type_dict,
+    case_tools_missing_description,
+    case_tools_missing_name,
+    case_tools_empty_dict_in_list,
+)
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -235,13 +245,42 @@ def groq_testing():
     print("=========== All Test Case Passed 4/4 ===========")
     return True
 
+
+def test_gemini_agent():
+    print("=========== Running GeminiAgent tools_info TestCases ===========")
+
+    cases = [
+        ("TestCase #1 - tools_info=None",                 case_tools_none),
+        ("TestCase #2 - tools_info=[] (empty list)",      case_tools_empty_list),
+        ("TestCase #3 - tools_info='search' (string)",    case_tools_wrong_type_string),
+        ("TestCase #4 - tools_info=42 (int)",             case_tools_wrong_type_int),
+        ("TestCase #5 - tools_info={} (bare dict)",       case_tools_wrong_type_dict),
+        ("TestCase #6 - missing 'description' key",       case_tools_missing_description),
+        ("TestCase #7 - missing 'name' key",              case_tools_missing_name),
+        ("TestCase #8 - [{}] empty dict in list",         case_tools_empty_dict_in_list),
+    ]
+
+    passed = 0
+    for label, case_fn in cases:
+        logger.info(label)
+        val, result = case_fn()
+        logger.debug(f"Result: {result}")
+        if val:
+            passed += 1
+        else:
+            logger.error(f"{label} — FAILED: {result}")
+            return False
+
+    print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
+    return True
 def main():
     results = []
-    results.append(auth_testing()) # Auth Test Case
-    results.append(api_config_testing()) # API config Test Case
-    results.append(mistral_testing()) # Mistral provider testing
-    results.append(gemini_testing()) # gemini Testing
-    results.append(groq_testing()) # groq Testing
+    results.append(auth_testing())        # Auth Test Case
+    results.append(api_config_testing())  # API config Test Case
+    results.append(mistral_testing())     # Mistral provider testing
+    results.append(gemini_testing())      # Gemini Testing
+    results.append(groq_testing())        # Groq Testing
+    results.append(test_gemini_agent())   # GeminiAgent tools_info Testing
 
     return all(results) # Return False if any Test Case Failed
     
