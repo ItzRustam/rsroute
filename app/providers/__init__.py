@@ -4,8 +4,9 @@
 
 from .mistral_client import MistralAI
 from .gemini_client import ChatGemini
+from .groq_client import ChatGroq
 
-__all__ = ["MistralAI", "ChatGemini"]
+__all__ = ["MistralAI", "ChatGemini", "ChatGroq"]
 
 """Parameters for Each Function Call
 model_name

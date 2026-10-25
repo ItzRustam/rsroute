@@ -10,6 +10,7 @@ from tests import get_logger
 from tests import api_config_test
 from tests import test_mistral
 from tests import test_gemini
+from tests import test_groq
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -206,12 +207,41 @@ def gemini_testing():
 
     return True # End if no secret key test
 
+def groq_testing():
+    FAKE_KEY = "my_groq_key"
+    print("=========== Running ChatGroq TestCases with Fake API ===========")
+
+    logger.info("TestCase #1 - KEY & query both None.")
+    val, result = test_groq()
+    logger.debug(f"case #1 result - {result}")
+    if not(val):
+        logger.error("TestCase #1 Failed.")
+        return False
+
+    logger.info("TestCase #2 - query = None")
+    val, result = test_groq(KEY=FAKE_KEY)
+    logger.debug(f"case #2 result - {result}")
+    if not(val):
+        logger.error("TestCase #2 Failed.")
+        return False
+
+    logger.info("TestCase #3 - valid value with real_api=True with fake api")
+    val, result = test_groq(KEY=FAKE_KEY, query="hey", real_api=True)
+    logger.debug(f"case #3 result - {result}")
+    if val != False:
+        logger.error("TestCase #3 Failed.")
+        return False
+
+    print("=========== All Test Case Passed 4/4 ===========")
+    return True
+
 def main():
     results = []
     results.append(auth_testing()) # Auth Test Case
     results.append(api_config_testing()) # API config Test Case
     results.append(mistral_testing()) # Mistral provider testing
     results.append(gemini_testing()) # gemini Testing
+    results.append(groq_testing()) # groq Testing
 
     return all(results) # Return False if any Test Case Failed
     
