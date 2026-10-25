@@ -45,6 +45,8 @@ from langchain_core.tools import BaseTool
 from langchain.agents import create_agent
 from langchain_core.messages import BaseMessage, HumanMessage
 from rich import print as rprint # useful while debugging
+from langchain_core.tools import tool, StructuredTool
+import warnings
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
@@ -118,8 +120,6 @@ class ChatGemini:
                                               thinking_level=thinking_level,
                                               thinking_budget=thinking_budget,
                                               google_api_key=api_key)
-    #     Agentic Model
-        self.__agent = None # Agent will be changed with model.bind_tools()
 
     # auto call
     """Example:
@@ -139,32 +139,6 @@ class ChatGemini:
             InvalidRequest: If `query` is not provided.
         """
         return self.generate(query=query)
-
-    def generate_from_agent(self, query : str | List[BaseMessage] = None) -> AIMessage:
-        """Generate response from agent on given `query`.
-            Args:
-                query (str or List of HumanMessage and SystemPrompt or ChatHistory): The input prompt or query to generate a response for.
-
-                Returns:
-                    str: The generated response from Gemini.
-
-                Raises:
-                    InvalidRequest: If `query` is not provided.
-                """
-        if query is None:
-            raise InvalidRequest(f"`query` is given `None`")
-
-
-        if isinstance(query, str): # Check for str to convert into HumanMessage with List
-            query = [HumanMessage(content=query)]
-
-        result = self.__agent.invoke({
-            "messages": query
-        })
-
-        rprint(result)
-
-        return result["messages"][-1]
 
 
     def generate(self, query : Any = None):
@@ -189,19 +163,28 @@ class ChatGemini:
         return self.__params
 
 
-    "Deprecated: Architecture Changed and this version failed."
-    def bind_tools(self, tools : List[BaseTool]) -> None:
-        """Bind tools to `GeminiClient`."""
-        if all(isinstance(tool, BaseTool) for tool in tools):
-            pass
-        else:
-            raise InvalidRequest(f"`tools` is not a `BaseTool`")
-        self.__agent = create_agent(
-            model=self.__model,
-            tools=tools,
-        )
-
 class GeminiAgent:
+
+    def __fake_tool(self, name : str, description : str) -> StructuredTool:
+        @tool(name, description=description)
+        def created_tool():
+            ...
+
+        return created_tool
+
+    def __create_fake_tools(self, tools_info : Dict[str, str]) -> List[StructuredTool]:
+        """create fake tools"""
+        tools : List[StructuredTool] = []
+
+        for tool_info in tools_info:
+            if "name" not in tool_info or "description" not in tool_info:
+                raise InvalidRequest("Give proper tool functioning `name` and `description`")
+
+            tools.append(self.__fake_tool(name=tool_info.get("name"), description=tool_info.get("description")))
+
+        return tools
+
+
     def __init__(
         self,
         api_key : str = None,
@@ -217,12 +200,34 @@ class GeminiAgent:
 
         tools_info : List[Dict[str, str]] = None
     ) -> AIMessage:
+        """Tool Info supports only from
+        [
+            {
+                "name": "name_of_tool:,
+                "description": "description"
+            }
+        ]
+        """
+
+        warnings.warn("For Best Agentic Experience use rsroute python package. https://www.github.com/ItzRustam/rsroute-package")
+        
         
         if api_key is None:
             raise InvalidRequest(f"API key is not given.")
 
         if tools_info is None:
             raise InvalidRequest(f"No Tool given to Agent Edition")
+        
+        if not(isinstance(tools_info, list)):
+            raise InvalidRequest("Tools must follow the order. [{'name' : 'name of tool', 'description': 'description of tool'}]")
+
+        if len(tools_info) == 0:
+            raise InvalidRequest("No tool provided")
+        
+        if not(isinstance(tools_info[0], dict)):
+            raise InvalidRequest("Tools are Provided in wrong Format use Dict.")
+
+        created_tools = self.__create_fake_tools(tools_info=tools_info)
 
         # Parameter Holding
         self.__params : Dict[Any, Any] = {
@@ -232,18 +237,19 @@ class GeminiAgent:
             "top_p" : top_p,
             "end_point" : end_point,
             "thinking_level" : thinking_level,
-            "thinking_budget": thinking_budget
+            "thinking_budget": thinking_budget,
+            "binded_tools": tools_info
         }
 
-        # Hidden Chat Model
-        self.__model = ChatGoogleGenerativeAI(model=model,
+        # Hidden Agent Model
+        self.__agent = ChatGoogleGenerativeAI(model=model,
                                               temperature=temperature,
                                               max_tokens=max_tokens,
                                               top_p=top_p,
                                               base_url=end_point,
                                               thinking_level=thinking_level,
                                               thinking_budget=thinking_budget,
-                                              google_api_key=api_key)
+                                              google_api_key=api_key).bind_tools(tools=created_tools)
 
     # auto call
     """Example:
@@ -279,7 +285,7 @@ class GeminiAgent:
         if query is None:
             raise InvalidRequest(f"`query` is given `None`")
 
-        return self.__model.invoke(input=query)
+        return self.__agent.invoke(input=query)
 
     def get_params(self):
         "Model initialized parameters"
