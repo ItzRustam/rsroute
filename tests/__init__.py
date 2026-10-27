@@ -12,10 +12,13 @@ from .gemini_agent_test import test_gemini_agent
 from .base_estimator_test import (
     test_base_estimator_inheritance,
     test_base_estimator_methods,
+    test_agent_classes_validation,
+    test_ddgs_web_search,
     test_groq_endpoints,
+    test_agent_endpoints,
 )
 
-# Added logger for colorfull logging in test cases
+# Added logger for colorful logging in test cases
 __all__ = [
     "auth_test",
     "get_logger",
@@ -26,5 +29,8 @@ __all__ = [
     "test_gemini_agent",
     "test_base_estimator_inheritance",
     "test_base_estimator_methods",
+    "test_agent_classes_validation",
+    "test_ddgs_web_search",
     "test_groq_endpoints",
+    "test_agent_endpoints",
 ]
