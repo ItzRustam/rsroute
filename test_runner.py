@@ -14,7 +14,10 @@ from tests import test_groq
 from tests import (
     test_base_estimator_inheritance,
     test_base_estimator_methods,
+    test_agent_classes_validation,
+    test_ddgs_web_search,
     test_groq_endpoints,
+    test_agent_endpoints,
 )
 from tests.gemini_agent_test import (
     case_tools_none,
@@ -281,11 +284,14 @@ def test_gemini_agent():
 
 
 def base_estimator_testing():
-    print("=========== Running BaseEstimator & Groq Endpoints TestCases ===========")
+    print("=========== Running BaseEstimator, Agent Classes & Endpoints TestCases ===========")
     cases = [
-        ("TestCase #1 - BaseEstimator inheritance (ChatGroq, ChatGemini, ChatMistralAI)", test_base_estimator_inheritance),
+        ("TestCase #1 - BaseEstimator & BaseEstimatorAgent inheritance", test_base_estimator_inheritance),
         ("TestCase #2 - BaseEstimator validation & parameter methods", test_base_estimator_methods),
-        ("TestCase #3 - Groq endpoints /v1/groq/chat & /v1/groq/parameters", test_groq_endpoints),
+        ("TestCase #3 - Agent classes tools_info validation (Gemini, Groq, Mistral)", test_agent_classes_validation),
+        ("TestCase #4 - DDGS web_search tool check", test_ddgs_web_search),
+        ("TestCase #5 - Groq chat & parameters endpoints (/v1/groq/chat, /v1/groq/parameters)", test_groq_endpoints),
+        ("TestCase #6 - Agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent)", test_agent_endpoints),
     ]
 
     passed = 0
