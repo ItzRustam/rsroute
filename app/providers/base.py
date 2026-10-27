@@ -5,7 +5,9 @@
 """Base estimator module for RSRoute providers."""
 
 from abc import ABC
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+import warnings
+from langchain_core.tools import tool, StructuredTool
 from app.Errors import InvalidRequest
 
 
@@ -24,7 +26,7 @@ class BaseEstimator(ABC):
         self._params: Dict[str, Any] = {}
         self._model: Any = None
 
-    def _validate_api_key(self, api_key: Optional[str]) -> None:
+    def _validate_api_key(self, api_key: Optional[str] = None) -> None:
         """Validate that an API key was provided.
 
         Raises:
@@ -93,4 +95,123 @@ class BaseEstimator(ABC):
         """
         self._params.update(params)
         return self
+
+
+class BaseEstimatorAgent(BaseEstimator):
+    """Abstract base estimator class for agentic LLM providers in RSRoute.
+
+    Wraps chat models with tool-binding support via Langchain,
+    enabling agentic workflows where models reason about and select tools to invoke.
+
+    Attributes:
+        _model: The underlying LangChain model with tools bound.
+        _params (Dict[str, Any]): Dictionary containing initialization parameters.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _fake_tool(self, name: str, description: str) -> StructuredTool:
+        """Create a stub StructuredTool with given name and description."""
+        @tool(name, description=description)
+        def created_tool():
+            ...
+        return created_tool
+
+    def _create_fake_tools(self, tools_info: List[Dict[str, str]]) -> List[StructuredTool]:
+        """Create fake/stub tools from tool info dictionaries."""
+        tools: List[StructuredTool] = []
+        for tool_info in tools_info:
+            if not isinstance(tool_info, dict) or "name" not in tool_info or "description" not in tool_info:
+                raise InvalidRequest("Give proper tool functioning `name` and `description`")
+            tools.append(self._fake_tool(name=tool_info.get("name"), description=tool_info.get("description")))
+        return tools
+
+    def _validate_tools_info(self, tools_info: Any) -> None:
+        """Validate tools_info structure.
+
+        Raises:
+            InvalidRequest: If tools_info is None, empty, not a list, or contains non-dict entries.
+        """
+        if tools_info is None:
+            raise InvalidRequest("No Tool given to Agent Edition")
+
+        if not isinstance(tools_info, list):
+            raise InvalidRequest("Tools must follow the order. [{'name' : 'name of tool', 'description': 'description of tool'}]")
+
+        if len(tools_info) == 0:
+            raise InvalidRequest("No tool provided")
+
+        if not isinstance(tools_info[0], dict):
+            raise InvalidRequest("Tools are Provided in wrong Format use Dict.")
+
+        for tool_info in tools_info:
+            if not isinstance(tool_info, dict) or "name" not in tool_info or "description" not in tool_info:
+                raise InvalidRequest("Give proper tool functioning `name` and `description`")
+
+    # Compatibility aliases for previous private methods
+    def _BaseEstimatorAgent__fake_tool(self, name: str, description: str) -> StructuredTool:
+        return self._fake_tool(name=name, description=description)
+
+    def _BaseEstimatorAgent__create_fake_tools(self, tools_info: List[Dict[str, str]]) -> List[StructuredTool]:
+        return self._create_fake_tools(tools_info=tools_info)
+
+class BaseEstimatorAgent(BaseEstimator):
+    """Abstract base estimator class for agentic LLM providers in RSRoute.
+
+    Wraps chat models with tool-binding support via Langchain,
+    enabling agentic workflows where models reason about and select tools to invoke.
+
+    Attributes:
+        _model: The underlying LangChain model with tools bound.
+        _params (Dict[str, Any]): Dictionary containing initialization parameters.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _fake_tool(self, name: str, description: str) -> StructuredTool:
+        """Create a stub StructuredTool with given name and description."""
+        @tool(name, description=description)
+        def created_tool():
+            ...
+        return created_tool
+
+    def _create_fake_tools(self, tools_info: List[Dict[str, str]]) -> List[StructuredTool]:
+        """Create fake/stub tools from tool info dictionaries."""
+        tools: List[StructuredTool] = []
+        for tool_info in tools_info:
+            if not isinstance(tool_info, dict) or "name" not in tool_info or "description" not in tool_info:
+                raise InvalidRequest("Give proper tool functioning `name` and `description`")
+            tools.append(self._fake_tool(name=tool_info.get("name"), description=tool_info.get("description")))
+        return tools
+
+    def _validate_tools_info(self, tools_info: Any) -> None:
+        """Validate tools_info structure.
+
+        Raises:
+            InvalidRequest: If tools_info is None, empty, not a list, or contains non-dict entries.
+        """
+        if tools_info is None:
+            raise InvalidRequest("No Tool given to Agent Edition")
+
+        if not isinstance(tools_info, list):
+            raise InvalidRequest("Tools must follow the order. [{'name' : 'name of tool', 'description': 'description of tool'}]")
+
+        if len(tools_info) == 0:
+            raise InvalidRequest("No tool provided")
+
+        if not isinstance(tools_info[0], dict):
+            raise InvalidRequest("Tools are Provided in wrong Format use Dict.")
+
+        for tool_info in tools_info:
+            if not isinstance(tool_info, dict) or "name" not in tool_info or "description" not in tool_info:
+                raise InvalidRequest("Give proper tool functioning `name` and `description`")
+
+    # Compatibility aliases for previous private methods
+    def _BaseEstimatorAgent__fake_tool(self, name: str, description: str) -> StructuredTool:
+        return self._fake_tool(name=name, description=description)
+
+    def _BaseEstimatorAgent__create_fake_tools(self, tools_info: List[Dict[str, str]]) -> List[StructuredTool]:
+        return self._create_fake_tools(tools_info=tools_info)
 
