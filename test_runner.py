@@ -11,6 +11,11 @@ from tests import api_config_test
 from tests import test_mistral
 from tests import test_gemini, test_gemini_agent
 from tests import test_groq
+from tests import (
+    test_base_estimator_inheritance,
+    test_base_estimator_methods,
+    test_groq_endpoints,
+)
 from tests.gemini_agent_test import (
     case_tools_none,
     case_tools_empty_list,
@@ -273,6 +278,31 @@ def test_gemini_agent():
 
     print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
     return True
+
+
+def base_estimator_testing():
+    print("=========== Running BaseEstimator & Groq Endpoints TestCases ===========")
+    cases = [
+        ("TestCase #1 - BaseEstimator inheritance (ChatGroq, ChatGemini, ChatMistralAI)", test_base_estimator_inheritance),
+        ("TestCase #2 - BaseEstimator validation & parameter methods", test_base_estimator_methods),
+        ("TestCase #3 - Groq endpoints /v1/groq/chat & /v1/groq/parameters", test_groq_endpoints),
+    ]
+
+    passed = 0
+    for label, case_fn in cases:
+        logger.info(label)
+        val, result = case_fn()
+        logger.debug(f"Result: {result}")
+        if val:
+            passed += 1
+        else:
+            logger.error(f"{label} — FAILED: {result}")
+            return False
+
+    print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
+    return True
+
+
 def main():
     results = []
     results.append(auth_testing())        # Auth Test Case
@@ -281,6 +311,7 @@ def main():
     results.append(gemini_testing())      # Gemini Testing
     results.append(groq_testing())        # Groq Testing
     results.append(test_gemini_agent())   # GeminiAgent tools_info Testing
+    results.append(base_estimator_testing())  # BaseEstimator & Groq endpoints Testing
 
     return all(results) # Return False if any Test Case Failed
     

@@ -60,6 +60,7 @@ DATA_WMK = {"query" : "Hello?",
 END_POINTS : Dict[str, str] = {
     "gemini" : f"{URL}/v1/gemini",
     "mistral" : f"{URL}/v1/mistral",
+    "groq" : f"{URL}/v1/groq",
 }
 
 
@@ -79,6 +80,8 @@ class check_server:
     Available Routes Test
     ----------------------
     * Gemini
+    * MistralAI
+    * Groq
     """
 
     @staticmethod
@@ -110,6 +113,28 @@ class check_server:
         return check_status(status_code=response.status_code), response.json()
 
     @staticmethod
+    def check_groq_with_key():
+        data = DATA.copy()
+        # Deleting useless parameter
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "openai/gpt-oss-120b"
+        response = rq.post(url=f"{END_POINTS['groq']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_groq_without_key():
+        data = DATA_WMK.copy()
+        # Deleting useless parameter
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "openai/gpt-oss-120b"
+        response = rq.post(url=f"{END_POINTS['groq']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
     def check_gemini_params():
         response = rq.get(url=f"{END_POINTS['gemini']}/parameter")
         return check_status(status_code=response.status_code), response.json()
@@ -120,9 +145,16 @@ class check_server:
         return check_status(status_code=response.status_code), response.json()
 
     @staticmethod
+    def check_groq_params():
+        response = rq.get(url=f"{END_POINTS['groq']}/parameters")
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
     def check_root():
         response = rq.get(url=f"{URL}/")
         return check_status(status_code=response.status_code), response.json()
+
+
 if __name__ == "__main__":
     """Use Function to check server."""
     status, output = check_server.check_gemini_with_key()
@@ -150,5 +182,17 @@ if __name__ == "__main__":
     pprint(output)
 
     status, output = check_server.check_mistral_params()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_groq_with_key()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_groq_without_key()
+    print(status)
+    pprint(output)
+
+    status, output = check_server.check_groq_params()
     print(status)
     pprint(output)
