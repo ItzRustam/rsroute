@@ -48,8 +48,9 @@ Parameter removed
 
 from langchain_mistralai import ChatMistralAI as _LangchainChatMistralAI
 from app.Errors import *
-from typing import Any, Dict, Optional
-from app.providers.base import BaseEstimator
+from typing import Any, Dict, List, Optional
+import warnings
+from app.providers.base import BaseEstimator, BaseEstimatorAgent
 
 """
 TODO
@@ -167,6 +168,83 @@ class ChatMistralAI(BaseEstimator):
 
 # Backward compatibility alias so nothing breaks
 MistralAI = ChatMistralAI
+
+
+class MistralAgent(BaseEstimatorAgent):
+    def __init__(
+        self,
+        api_key : str = None,
+        model : str = "mistral-small-2603",
+        temperature : float = 0.7,
+        max_tokens : int = 2048,
+        top_p : float = 1.0,
+
+        # Base url
+        end_point : str = None,
+
+        tools_info : List[Dict[str, str]] = None
+    ):
+        """MistralAI-powered agentic wrapper with tool-binding support via Langchain.
+
+        Wraps `ChatMistralAI` and binds fake/stub tools to the model,
+        enabling the model to reason about and invoke external tools by name.
+
+        Args:
+            api_key (str): Mistral API credential key. Required.
+            model (str): Target Mistral model name. Defaults to ``"mistral-small-2603"``.
+            temperature (float): Creativity/randomness control (0.0–2.0). Defaults to ``0.7``.
+            max_tokens (int): Maximum tokens to generate per response. Defaults to ``2048``.
+            top_p (float): Nucleus sampling threshold (0.0–1.0). Defaults to ``1.0``.
+            end_point (str): Custom base URL for proxy servers or API gateways. Optional.
+            tools_info (List[Dict[str, str]]): List of tool definitions to bind to the agent.
+                Each entry must have ``"name"`` and ``"description"`` keys. Required.
+
+        Raises:
+            InvalidRequest: If ``api_key`` is ``None``.
+            InvalidRequest: If ``tools_info`` is ``None``, empty, not a list, or contains non-dict entries.
+        """
+        warnings.warn("For Best Agentic Experience use rsroute python package. https://www.github.com/ItzRustam/rsroute-package")
+        super().__init__()
+        self._validate_api_key(api_key)
+        self._validate_tools_info(tools_info)
+
+        created_tools = self._create_fake_tools(tools_info=tools_info)
+
+        self._params : Dict[str, Any] = {
+            "model" : model,
+            "temperature" : temperature,
+            "max_tokens" : max_tokens,
+            "top_p" : top_p,
+            "end_point" : end_point,
+            "binded_tools": tools_info,
+        }
+
+        self._model = _LangchainChatMistralAI(
+            model_name=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+            base_url=end_point,
+            api_key=api_key
+        ).bind_tools(tools=created_tools)
+
+        self.__agent = self._model
+        self.__params = self._params
+
+    def generate(self, query : Any = None):
+        """Generate response on given `query`."""
+        return super().generate(query=query)
+
+    def get_params(self):
+        """Model initialized parameters."""
+        return super().get_params()
+
+    def __call__(self, query : Any = None):
+        """Generate response on given `query`. Same as `generate()`."""
+        return self.generate(query=query)
+
+
+ChatMistralAgent = MistralAgent
 
 
 if __name__ == "__main__":

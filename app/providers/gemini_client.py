@@ -47,7 +47,7 @@ from langchain_core.messages import BaseMessage, HumanMessage
 from rich import print as rprint # useful while debugging
 from langchain_core.tools import tool, StructuredTool
 import warnings
-from app.providers.base import BaseEstimator
+from app.providers.base import BaseEstimator, BaseEstimatorAgent
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
@@ -97,6 +97,9 @@ class ChatGemini(BaseEstimator):
             The class currently supports text-to-text generation and does not expose
             advanced streaming or additional model keyword arguments.
         """
+
+        super().__init__()
+        self._validate_api_key(api_key)
 
         # Parameter Holding
         self._params : Dict[Any, Any] = {
@@ -162,27 +165,13 @@ class ChatGemini(BaseEstimator):
         return super().get_params()
 
 
-class GeminiAgent:
+class GeminiAgent(BaseEstimatorAgent):
 
     def __fake_tool(self, name : str, description : str) -> StructuredTool:
-        @tool(name, description=description)
-        def created_tool():
-            ...
+        return self._fake_tool(name=name, description=description)
 
-        return created_tool
-
-    def __create_fake_tools(self, tools_info : Dict[str, str]) -> List[StructuredTool]:
-        """create fake tools"""
-        tools : List[StructuredTool] = []
-
-        for tool_info in tools_info:
-            if "name" not in tool_info or "description" not in tool_info:
-                raise InvalidRequest("Give proper tool functioning `name` and `description`")
-
-            tools.append(self.__fake_tool(name=tool_info.get("name"), description=tool_info.get("description")))
-
-        return tools
-
+    def __create_fake_tools(self, tools_info : List[Dict[str, str]]) -> List[StructuredTool]:
+        return self._create_fake_tools(tools_info=tools_info)
 
     def __init__(
         self,
@@ -199,77 +188,15 @@ class GeminiAgent:
 
         tools_info : List[Dict[str, str]] = None
     ) -> AIMessage:
-        """Gemini-powered agentic wrapper with tool-binding support via Langchain.
-
-        Wraps `ChatGoogleGenerativeAI` and binds fake/stub tools to the model,
-        enabling the model to reason about and invoke external tools by name.
-        Unlike `ChatGemini`, this class is designed for agentic workflows where
-        the model decides which tool to call based on the query.
-
-        Args:
-            api_key (str): Google Gemini API credential key. Required.
-            model (str): Target Gemini model name. Defaults to ``"gemini-3.5-flash-lite"``.
-            temperature (float): Creativity/randomness control (0.0–2.0). Defaults to ``0.7``.
-            max_tokens (int): Maximum tokens to generate per response. Defaults to ``2048``.
-            top_p (float): Nucleus sampling threshold (0.0–1.0). Defaults to ``1.0``.
-            end_point (str): Custom base URL for proxy servers or API gateways. Optional.
-            thinking_level (str): Reasoning depth toggle — ``"low"``, ``"medium"``, or ``"high"``. Optional.
-            thinking_budget (int): Max tokens allocated for internal reasoning chains. Optional.
-            tools_info (List[Dict[str, str]]): List of tool definitions to bind to the agent.
-                Each entry must have ``"name"`` and ``"description"`` keys. Required.
-
-        Raises:
-            InvalidRequest: If ``api_key`` is ``None``.
-            InvalidRequest: If ``tools_info`` is ``None``, empty, not a list, or contains non-dict entries.
-
-        Example:
-            ```python
-            agent = GeminiAgent(
-                api_key="YOUR_API_KEY",
-                model="gemini-3.5-flash-lite",
-                tools_info=[
-                    {"name": "search_web", "description": "Search the web for real-time information."},
-                    {"name": "calculator",  "description": "Evaluate mathematical expressions."},
-                ]
-            )
-            response = agent("What is 42 * 7 and what's the weather in Paris?")
-            ```
-
-        Note:
-            Tools are registered as lightweight stubs — the model selects which tool to call
-            and returns ``tool_calls`` in the response, but actual tool execution happens
-            on the client side. See ``AgentTemplate`` in ``tools.py`` for the response shape.
-
-            Tool info format::
-
-                [
-                    {"name": "tool_name", "description": "What this tool does"},
-                    ...
-                ]
-        """
-
         warnings.warn("For Best Agentic Experience use rsroute python package. https://www.github.com/ItzRustam/rsroute-package")
-        
-        
-        if api_key is None:
-            raise InvalidRequest(f"API key is not given.")
+        super().__init__()
+        self._validate_api_key(api_key)
+        self._validate_tools_info(tools_info)
 
-        if tools_info is None:
-            raise InvalidRequest(f"No Tool given to Agent Edition")
-        
-        if not(isinstance(tools_info, list)):
-            raise InvalidRequest("Tools must follow the order. [{'name' : 'name of tool', 'description': 'description of tool'}]")
-
-        if len(tools_info) == 0:
-            raise InvalidRequest("No tool provided")
-        
-        if not(isinstance(tools_info[0], dict)):
-            raise InvalidRequest("Tools are Provided in wrong Format use Dict.")
-
-        created_tools = self.__create_fake_tools(tools_info=tools_info)
+        created_tools = self._create_fake_tools(tools_info=tools_info)
 
         # Parameter Holding
-        self.__params : Dict[Any, Any] = {
+        self._params : Dict[Any, Any] = {
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
@@ -281,7 +208,7 @@ class GeminiAgent:
         }
 
         # Hidden Agent Model
-        self.__agent = ChatGoogleGenerativeAI(model=model,
+        self._model = ChatGoogleGenerativeAI(model=model,
                                               temperature=temperature,
                                               max_tokens=max_tokens,
                                               top_p=top_p,
@@ -290,45 +217,20 @@ class GeminiAgent:
                                               thinking_budget=thinking_budget,
                                               google_api_key=api_key).bind_tools(tools=created_tools)
 
-    # auto call
-    """Example:
-    model = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfu37jhkdflkjhfa73")
-    response = model("wtf")
-    """
+        self.__agent = self._model
+        self.__params = self._params
+
     def __call__(self, query : Any = None):
-        """Generate response on given `query`.
-
-        Args:
-            query (Any): The input prompt or query to generate a response for.
-
-        Returns:
-            str: The generated response from Gemini.
-
-        Raises:
-            InvalidRequest: If `query` is not provided.
-        """
+        """Generate response on given `query`. Same as `generate()`."""
         return self.generate(query=query)
 
     def generate(self, query : Any = None):
-        """Generate response on given `query`.
-
-        Args:
-            query (Any): The input prompt or query to generate a response for.
-
-        Returns:
-            str: The generated response from Gemini.
-
-        Raises:
-            InvalidRequest: If `query` is not provided.
-        """
-        if query is None:
-            raise InvalidRequest(f"`query` is given `None`")
-
-        return self.__agent.invoke(input=query)
+        """Generate response on given `query`."""
+        return super().generate(query=query)
 
     def get_params(self):
-        "Model initialized parameters"
-        return self.__params
+        """Model initialized parameters."""
+        return super().get_params()
 
 if __name__ == "__main__":
     llm = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfjysduyrwhjhruwfy_hsdgfhjdf_FAKE_API_KEY_BTW")
