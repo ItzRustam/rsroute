@@ -9,6 +9,22 @@ from .mistral_client_test import test_mistral
 from .gemini_client_test import test_gemini
 from .groq_client_test import test_groq
 from .gemini_agent_test import test_gemini_agent
+from .base_estimator_test import (
+    test_base_estimator_inheritance,
+    test_base_estimator_methods,
+    test_groq_endpoints,
+)
 
 # Added logger for colorfull logging in test cases
-__all__ = ["auth_test", 'get_logger', 'api_config_test', 'test_mistral', 'test_gemini', 'test_groq', 'test_gemini_agent']
+__all__ = [
+    "auth_test",
+    "get_logger",
+    "api_config_test",
+    "test_mistral",
+    "test_gemini",
+    "test_groq",
+    "test_gemini_agent",
+    "test_base_estimator_inheritance",
+    "test_base_estimator_methods",
+    "test_groq_endpoints",
+]
