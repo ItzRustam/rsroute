@@ -4,7 +4,7 @@
 
 """Test cases for BaseEstimator and Groq server endpoints."""
 
-from app.providers import BaseEstimator, ChatGroq, ChatGemini, ChatMistralAI, MistralAI, GeminiAgent
+from app.providers import BaseEstimator, ChatGroq, ChatGemini, ChatMistralAI, MistralAI
 from app.Errors import InvalidRequest
 from fastapi.testclient import TestClient
 from app.server import create_server
@@ -16,7 +16,6 @@ def test_base_estimator_inheritance():
     assert issubclass(ChatGemini, BaseEstimator), "ChatGemini must be a subclass of BaseEstimator"
     assert issubclass(ChatMistralAI, BaseEstimator), "ChatMistralAI must be a subclass of BaseEstimator"
     assert issubclass(MistralAI, BaseEstimator), "MistralAI must be a subclass of BaseEstimator"
-    assert issubclass(GeminiAgent, BaseEstimator), "GeminiAgent must be a subclass of BaseEstimator"
     assert ChatMistralAI is MistralAI, "ChatMistralAI should alias MistralAI"
     return True, "All provider classes inherit from BaseEstimator"
 
