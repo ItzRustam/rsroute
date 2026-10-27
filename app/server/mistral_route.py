@@ -10,6 +10,7 @@ from app.providers import MistralAI
 from fastapi import APIRouter, Body
 from app.Errors import *
 from dotenv import load_dotenv
+from typing import Dict, List, Any, Optional
 import os
 from app.auth import auth_exits, auth
 from app.server.tools import ResponseTemplate, convertResponse
@@ -26,15 +27,17 @@ router = APIRouter(
     tags=["MistralAI"]
 )
 
-@router.get("/parameter")
+@router.get("/parameters")
 def parameters() -> dict:
     params = PARAMS_INFO.copy()
+    params.pop("tools_info", None)
+    params.pop("tools_info_example (not a parameter)", None)
     return params
 
 
 @router.post("/chat")
 def chat(
-         query: str = Body("Hello"),
+         query: Any = Body("Hello"),
          master_key: str = Body(""),
          model: str = Body("mistral-small-2603"),
          temperature: float = Body(0.7),
@@ -43,6 +46,8 @@ def chat(
          # Base url
          end_point: str = Body(None),
          ):
+    if not isinstance(query, list):
+        query = [query]
     # Base Initlization
     LOGIN = False
     ERROR = "No Error Found"
