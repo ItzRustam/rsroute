@@ -2,8 +2,7 @@
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""server route connector for diffrent diffrent provider"""
-# NOTE: server doesn't support Tool Binding/calling
+"""server route connector for different providers with chat and agent capabilities"""
 from .root import router as root_router
 from .gemini_route import router as g_route # gemini_route
 from .mistral_route import router as m_route # mistral_route
@@ -19,12 +18,15 @@ def create_server() -> FastAPI:
     
     Available routers
     ----------------
-    Gemini: route to chat with Gemini  
-        route: /v1/gemini/chat
-    MistralAI: route to chat with Mistral AI
-        route: /v1/mistral/chat
-    Groq: route to chat with Groq
-        route: /v1/groq/chat
+    Gemini: route to chat and run agents with Gemini  
+        chat: /v1/gemini/chat
+        agent: /v1/gemini/agent
+    MistralAI: route to chat and run agents with Mistral AI
+        chat: /v1/mistral/chat
+        agent: /v1/mistral/agent
+    Groq: route to chat and run agents with Groq
+        chat: /v1/groq/chat
+        agent: /v1/groq/agent
 
     Returns
     -------
