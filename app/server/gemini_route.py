@@ -30,7 +30,7 @@ router = APIRouter(
     tags=["Gemini", "Google", "Agent", "ChatModel"]
 )
 
-@router.get("/parameter")
+@router.get("/parameters")
 def parameters() -> dict:
     params = PARAMS_INFO.copy()
     params["thinking_budget"] = " configure the token limits for reasoning and chain-of-thought processing in supported Google Gemini models"
@@ -39,7 +39,7 @@ def parameters() -> dict:
 
 @router.post("/chat")
 def chat(
-        query : str = Body("Hello"),
+        query : Any = Body("Hello"),
         master_key : str = Body(""),
         model : str = Body("gemini-3.5-flash-lite"),
         temperature : float = Body(0.7),
@@ -50,6 +50,11 @@ def chat(
         thinking_level : str = Body(None),
         thinking_budget : int = Body(None)
         ):
+
+    if not isinstance(query, list):
+        query = [query]
+
+        
     
     # Base Initlization
     LOGIN = False
@@ -113,7 +118,7 @@ def chat(
 
 @router.post("/agent")
 def agent(
-    query: str = Body("Hello"), 
+    query: List[Any] = Body("Hello"),
     master_key: str = Body(""), 
     model: str = Body("gemini-3.5-flash-lite"), 
     temperature: float = Body(0.7),

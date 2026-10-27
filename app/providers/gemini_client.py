@@ -47,10 +47,11 @@ from langchain_core.messages import BaseMessage, HumanMessage
 from rich import print as rprint # useful while debugging
 from langchain_core.tools import tool, StructuredTool
 import warnings
+from app.providers.base import BaseEstimator
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
-class ChatGemini:
+class ChatGemini(BaseEstimator):
     def __init__(
         self,
         api_key : str = None,
@@ -72,9 +73,9 @@ class ChatGemini:
         settings, model parameters, and query handling.
 
         Attributes:
-            __model (ChatGoogleGenerativeAI): Instance of Langchain's `ChatGoogleGenerativeAI` configured with
+            _model (ChatGoogleGenerativeAI): Instance of Langchain's `ChatGoogleGenerativeAI` configured with
                 the specified parameters.
-            __params (Dict[Any, Any]): Dictionary containing the parameters used to initialize
+            _params (Dict[Any, Any]): Dictionary containing the parameters used to initialize
                 the model, useful for debugging or introspection.
 
         Raises:
@@ -97,11 +98,8 @@ class ChatGemini:
             advanced streaming or additional model keyword arguments.
         """
 
-        if api_key is None:
-            raise InvalidRequest(f"API key is not given.")
-
         # Parameter Holding
-        self.__params : Dict[Any, Any] = {
+        self._params : Dict[Any, Any] = {
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
@@ -112,7 +110,7 @@ class ChatGemini:
         }
 
         # Hidden Chat Model
-        self.__model = ChatGoogleGenerativeAI(model=model,
+        self._model = ChatGoogleGenerativeAI(model=model,
                                               temperature=temperature,
                                               max_tokens=max_tokens,
                                               top_p=top_p,
@@ -120,6 +118,10 @@ class ChatGemini:
                                               thinking_level=thinking_level,
                                               thinking_budget=thinking_budget,
                                               google_api_key=api_key)
+
+        # Backwards compatibility attributes
+        self.__model = self._model
+        self.__params = self._params
 
     # auto call
     """Example:
@@ -153,14 +155,11 @@ class ChatGemini:
         Raises:
             InvalidRequest: If `query` is not provided.
         """
-        if query is None:
-            raise InvalidRequest(f"`query` is given `None`")
-
-        return self.__model.invoke(input=query)
+        return super().generate(query=query)
 
     def get_params(self):
         "Model initialized parameters"
-        return self.__params
+        return super().get_params()
 
 
 class GeminiAgent:

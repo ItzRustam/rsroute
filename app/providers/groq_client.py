@@ -18,12 +18,13 @@ Exposed: model, temperature, max_tokens, api_key, base_url (as `end_point`).
 
 from langchain_groq import ChatGroq as _LangchainChatGroq
 from app.Errors import *
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional
+from app.providers.base import BaseEstimator
 
 DEFAULT_GROQ_MODEL = "openai/gpt-oss-120b"
 
 """Class ChatGroq Does not supports `Streaming` & model_kwargs. supports only text-to-text"""
-class ChatGroq:
+class ChatGroq(BaseEstimator):
     def __init__(
         self,
         api_key : str = None,
@@ -40,13 +41,13 @@ class ChatGroq:
         interaction with Groq's model endpoints.
 
         Attributes:
-            __model (ChatGroq): Instance of Langchain's `ChatGroq` configured with
+            _model (_LangchainChatGroq): Instance of Langchain's `ChatGroq` configured with
                 the specified parameters.
-            __params (Dict[str, Any]): Dictionary containing the parameters used to initialize
+            _params (Dict[str, Any]): Dictionary containing the parameters used to initialize
                 the model, useful for debugging or introspection.
 
         Raises:
-            InvalidRequest: If `api_key` is not provided, or `model` is not in `GROQ_MODELS`.
+            InvalidRequest: If `api_key` is not provided.
 
         Example:
             ```python
@@ -57,24 +58,26 @@ class ChatGroq:
         Note:
             The class currently supports text-to-text generation only.
         """
+        super().__init__()
+        self._validate_api_key(api_key)
 
-        if api_key is None:
-            raise InvalidRequest("API key is not given.")
-
-
-        self.__model = _LangchainChatGroq(model=model,
+        self._model = _LangchainChatGroq(model=model,
                                           temperature=temperature,
                                           max_tokens=max_tokens,
                                           base_url=end_point,
                                           api_key=api_key)
 
         # Saving model initialize parameters
-        self.__params : Dict[str, Any] = {
+        self._params : Dict[str, Any] = {
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
             "end_point" : end_point,  # base_url
         }
+
+        # Backwards compatibility attributes
+        self.__model = self._model
+        self.__params = self._params
 
     def generate(self, query : Any = None):
         """Generate response on given `query`.
@@ -88,10 +91,7 @@ class ChatGroq:
         Raises:
             InvalidRequest: If `query` is not provided.
         """
-        if query is None:
-            raise InvalidRequest("`query` is given `None`")
-
-        return self.__model.invoke(input=query)
+        return super().generate(query=query)
 
     def get_params(self):
         """Get the parameters used during initialization.
@@ -99,7 +99,7 @@ class ChatGroq:
         Returns:
             Dict[str, Any]: A dictionary containing the initialization parameters.
         """
-        return self.__params
+        return super().get_params()
 
     """Example:
         model = ChatGroq(model="openai/gpt-oss-120b", api_key="my_groq_api_key")
