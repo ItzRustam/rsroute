@@ -4,7 +4,7 @@
 
 """This File Contains rsroute integration with MistralAI using Langchain."""
 
-"""Langchain-mistal ChatMistralAI parameters
+"""Langchain-mistral ChatMistralAI parameters
 
 mistral_model = ChatMistralAI(
     # Core Client & Network Settings
@@ -46,24 +46,25 @@ Parameter removed
 
 """
 
-from langchain_mistralai import ChatMistralAI
+from langchain_mistralai import ChatMistralAI as _LangchainChatMistralAI
 from app.Errors import *
-from typing import Any, Dict
+from typing import Any, Dict, Optional
+from app.providers.base import BaseEstimator
 
 """
 TODO
 Add Embedding Model Support
 """
 
-"""Class MistralAI Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
-class MistralAI:
+"""Class ChatMistralAI Does not supports `Streaming` & model_kwargs. supports only text-to-text"""
+class ChatMistralAI(BaseEstimator):
     def __init__(
         self,
         api_key : str = None,
         model : str = "mistral-small-2603",
         temperature : float = 0.7,
         max_tokens : int = 2048,
-        top_p : int = 1.0,
+        top_p : float = 1.0,
 
         # Base url
         end_point : str = None,
@@ -76,9 +77,9 @@ class MistralAI:
         of connection settings, model parameters, and query handling.
 
         Attributes:
-            __model (ChatMistralAI): Instance of Langchain's `ChatMistralAI` configured with
+            _model (_LangchainChatMistralAI): Instance of Langchain's `ChatMistralAI` configured with
                 the specified parameters.
-            __params (Dict[Any]): Dictionary containing the parameters used to initialize
+            _params (Dict[Any]): Dictionary containing the parameters used to initialize
                 the model, useful for debugging or introspection.
 
         Raises:
@@ -87,12 +88,12 @@ class MistralAI:
         Example:
             Initialize the MistralAI client with a specific model and API key:
             ```python
-            llm = MistralAI(model="mistral-small", api_key="my_mistral_api_key")
+            llm = ChatMistralAI(model="mistral-small", api_key="my_mistral_api_key")
             response = llm("What is Langchain?")
             ```
 
         Usage:
-            - Create an instance of `MistralAI` with desired parameters.
+            - Create an instance of `ChatMistralAI` with desired parameters.
             - Call the instance like a function to generate responses.
             - Utilize `get_params()` to retrieve the initialization parameters.
 
@@ -100,25 +101,28 @@ class MistralAI:
             The class currently supports text-to-text generation and does not expose
             advanced streaming or additional model keyword arguments.
         """
+        super().__init__()
+        self._validate_api_key(api_key)
 
-        if api_key is None:
-            raise InvalidRequest(f"API key is not given.")
+        self._model = _LangchainChatMistralAI(model_name=model,
+                                             temperature=temperature,
+                                             max_tokens=max_tokens,
+                                             top_p=top_p,
+                                             base_url=end_point,
+                                             api_key=api_key)
 
-        self.__model = ChatMistralAI(model_name=model,
-                                     temperature=temperature,
-                                     max_tokens=max_tokens,
-                                     top_p=top_p,
-                                     base_url=end_point,
-                                     api_key=api_key)
-
-        # Saving model initlize parameters
-        self.__params : Dict[Any] = {
+        # Saving model initialize parameters
+        self._params : Dict[Any, Any] = {
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
             "top_p" : top_p,
             "end_point" : end_point, # base_url,
         }
+
+        # Backwards compatibility attributes
+        self.__model = self._model
+        self.__params = self._params
 
     def generate(self, query : Any = None):
         """Generate response on given `query`.
@@ -132,10 +136,7 @@ class MistralAI:
         Raises:
             InvalidRequest: If `query` is not provided.
         """
-        if query is None:
-            raise InvalidRequest(f"`query` is given `None`")
-        
-        return self.__model.invoke(input=query)
+        return super().generate(query=query)
 
     def get_params(self):
         """Get the parameters used during initialization.
@@ -143,10 +144,10 @@ class MistralAI:
         Returns:
             Dict[Any]: A dictionary containing the initialization parameters.
         """
-        return self.__params
+        return super().get_params()
 
     """Example:
-        model = MistralAI(model="mistral-small", api_key="my_mistral_api_key")
+        model = ChatMistralAI(model="mistral-small", api_key="my_mistral_api_key")
         response = model("wtf")
     """
     def __call__(self, query : Any = None):
@@ -164,6 +165,10 @@ class MistralAI:
         return self.generate(query=query)
 
 
+# Backward compatibility alias so nothing breaks
+MistralAI = ChatMistralAI
+
+
 if __name__ == "__main__":
-    llm = MistralAI(model="mistral-small", api_key="mistral_key_pls")
+    llm = ChatMistralAI(model="mistral-small", api_key="mistral_key_pls")
     response = llm(query="Hello? how are the Decoder Style Transformer Architecture are built?")
