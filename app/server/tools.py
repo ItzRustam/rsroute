@@ -5,7 +5,7 @@
 """Helpful tools for server to improve code reusability"""
 
 from pydantic import BaseModel
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Union
 from langchain.messages import AIMessage
 
 # NOTE: Do not use it directly, always make .copy() and then edit/send.
@@ -14,7 +14,7 @@ PARAMS_INFO : Dict[str, str] = {
     "master_key": "rsroute key, mandatory to send response, change it in `.env`",
     "model": "Model name",
     "temperature": "Model creativity scale from 0.0 to 1.0 default is 0.7. Mid-Creative",
-    "max_token": "Maximum Tokens To generate in each request",
+    "max_tokens": "Maximum Tokens To generate in each request",
     "top_p": "Nucleus sampling token selection boundary (0.0 to 1.0)",
     "end_point": "Custom url to connect to model.",
     "tools_info" : "Bind Your Tool. (only in `/agent` mode)",
@@ -25,7 +25,7 @@ PARAMS_INFO : Dict[str, str] = {
 class ResponseTemplate(BaseModel):
     """FastAPI server response Template."""
     content : Any
-    query : List[Any]
+    query : Any
     error : str
     login : bool
     auth: bool
@@ -40,7 +40,7 @@ class AgentTemplate(BaseModel):
     """FastAPI server response Template For Agent."""
     content : Any
     tool_calls : Optional[List[Dict[Any, Any]]] = []
-    query : List[Any]
+    query : Any
     error : str
     login : bool
     auth: bool
@@ -53,7 +53,7 @@ class AgentTemplate(BaseModel):
 
 
 def convertAgentResponse(response : AIMessage, 
-    query : List[Any], 
+    query : Any, 
     error : str, 
     auth : bool, 
     login : bool, 
@@ -83,7 +83,7 @@ def convertAgentResponse(response : AIMessage,
 
 
 def convertResponse(response : AIMessage, 
-    query : str, 
+    query : Any, 
     error : str, 
     auth : bool, 
     login : bool, 
@@ -107,5 +107,3 @@ def convertResponse(response : AIMessage,
 
     # returning Dict
     return result.model_dump()
-    
-    
