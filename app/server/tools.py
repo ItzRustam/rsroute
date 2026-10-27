@@ -25,7 +25,7 @@ PARAMS_INFO : Dict[str, str] = {
 class ResponseTemplate(BaseModel):
     """FastAPI server response Template."""
     content : Any
-    query : str
+    query : List[Any]
     error : str
     login : bool
     auth: bool
@@ -40,7 +40,7 @@ class AgentTemplate(BaseModel):
     """FastAPI server response Template For Agent."""
     content : Any
     tool_calls : Optional[List[Dict[Any, Any]]] = []
-    query : str
+    query : List[Any]
     error : str
     login : bool
     auth: bool
@@ -53,7 +53,7 @@ class AgentTemplate(BaseModel):
 
 
 def convertAgentResponse(response : AIMessage, 
-    query : str, 
+    query : List[Any], 
     error : str, 
     auth : bool, 
     login : bool, 
