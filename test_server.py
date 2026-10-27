@@ -9,7 +9,10 @@ from app.server import create_server
 import requests as rq
 from rich import print as pprint # pretty print
 from typing import Dict, List, Any
-from duckduckgo_search import DDGS
+try:
+    from ddgs import DDGS
+except ImportError:
+    from duckduckgo_search import DDGS
 
 
 def web_search(query: str, max_results: int = 3) -> List[Dict[str, Any]]:
@@ -58,7 +61,11 @@ thinking_level,
 safety_settings
 """
 
-URL = f"http://{os.getenv('HOST', '127.0.0.1')}:{os.getenv('PORT', '8000')}"
+_host = os.getenv("HOST", "127.0.0.1")
+if _host == "0.0.0.0":
+    _host = "127.0.0.1"
+_port = os.getenv("PORT", "8000")
+URL = f"http://{_host}:{_port}"
 DATA = {"query" : "What is GitHub?", 
         "master_key": "RSRoute_my_key", 
         "model": "gemini-3.5-flash-lite",
@@ -255,73 +262,96 @@ class check_server:
 
 if __name__ == "__main__":
     """Use Function to check server."""
+    import sys
+    results = []
+
     # Root check
     status, output = check_server.check_root()
+    results.append(status)
     print("Root status:", status)
     pprint(output)
 
     # Gemini Chat checks
     status, output = check_server.check_gemini_with_key()
+    results.append(status)
     print("Gemini Chat with key:", status)
     pprint(output)
 
     status, output = check_server.check_gemini_without_key()
+    results.append(status)
     print("Gemini Chat without key:", status)
     pprint(output)
 
     # Gemini Agent checks (using web_search tool with DDGS)
     status, output = check_server.check_gemini_agent_with_key()
+    results.append(status)
     print("Gemini Agent with key:", status)
     pprint(output)
 
     status, output = check_server.check_gemini_agent_without_key()
+    results.append(status)
     print("Gemini Agent without key:", status)
     pprint(output)
 
     status, output = check_server.check_gemini_params()
+    results.append(status)
     print("Gemini params:", status)
     pprint(output)
 
     # MistralAI Chat checks
     status, output = check_server.check_mistral_with_key()
+    results.append(status)
     print("Mistral Chat with key:", status)
     pprint(output)
 
     status, output = check_server.check_mistral_without_key()
+    results.append(status)
     print("Mistral Chat without key:", status)
     pprint(output)
 
     # MistralAI Agent checks (using web_search tool with DDGS)
     status, output = check_server.check_mistral_agent_with_key()
+    results.append(status)
     print("Mistral Agent with key:", status)
     pprint(output)
 
     status, output = check_server.check_mistral_agent_without_key()
+    results.append(status)
     print("Mistral Agent without key:", status)
     pprint(output)
 
     status, output = check_server.check_mistral_params()
+    results.append(status)
     print("Mistral params:", status)
     pprint(output)
 
     # Groq Chat checks
     status, output = check_server.check_groq_with_key()
+    results.append(status)
     print("Groq Chat with key:", status)
     pprint(output)
 
     status, output = check_server.check_groq_without_key()
+    results.append(status)
     print("Groq Chat without key:", status)
     pprint(output)
 
     # Groq Agent checks (using web_search tool with DDGS)
     status, output = check_server.check_groq_agent_with_key()
+    results.append(status)
     print("Groq Agent with key:", status)
     pprint(output)
 
     status, output = check_server.check_groq_agent_without_key()
+    results.append(status)
     print("Groq Agent without key:", status)
     pprint(output)
 
     status, output = check_server.check_groq_params()
+    results.append(status)
     print("Groq params:", status)
     pprint(output)
+
+    all_passed = all(results)
+    print(f"\nServer tests completed: {sum(results)}/{len(results)} passed.")
+    sys.exit(0 if all_passed else 1)

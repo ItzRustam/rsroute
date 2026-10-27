@@ -26,6 +26,7 @@ langchain-groq
 # HTTP Client
 httpx
 aiohttp
+requests
 
 # Async Utilities
 anyio
@@ -37,5 +38,5 @@ cryptography
 
 colorlog
 
-
 rich
+ddgs
