@@ -31,6 +31,7 @@ router = APIRouter(
 )
 
 @router.get("/parameters")
+@router.get("/parameter")
 def parameters() -> dict:
     params = PARAMS_INFO.copy()
     params["thinking_budget"] = " configure the token limits for reasoning and chain-of-thought processing in supported Google Gemini models"
@@ -118,7 +119,7 @@ def chat(
 
 @router.post("/agent")
 def agent(
-    query: List[Any] = Body("Hello"),
+    query: Any = Body("Hello"),
     master_key: str = Body(""), 
     model: str = Body("gemini-3.5-flash-lite"), 
     temperature: float = Body(0.7),
@@ -154,15 +155,20 @@ def agent(
         return response.model_dump()
     
 
-    model : GeminiAgent = GeminiAgent(api_key=os.getenv("GOOGLE_API_KEY"),
-                       model=model,
-                       temperature=temperature,
-                       max_tokens=max_tokens,
-                       top_p=top_p,
-                       end_point=end_point,
-                       thinking_budget=thinking_budget,
-                       thinking_level=thinking_level,
-                       tools_info=tools_info)
+    try:
+        model : GeminiAgent = GeminiAgent(api_key=os.getenv("GOOGLE_API_KEY"),
+                           model=model,
+                           temperature=temperature,
+                           max_tokens=max_tokens,
+                           top_p=top_p,
+                           end_point=end_point,
+                           thinking_budget=thinking_budget,
+                           thinking_level=thinking_level,
+                           tools_info=tools_info)
+    except Exception as E:
+        response = AgentTemplate(content="Invalid Request", error=str(E),
+                                 login=LOGIN, query=query, auth=AUTH_ENABLE)
+        return response.model_dump()
 
     try:
         result = model(query)  # getting result
