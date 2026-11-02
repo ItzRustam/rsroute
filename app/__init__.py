@@ -6,7 +6,7 @@ from . import Errors
 from . import auth
 from . import providers
 from . import server
+from . import defaults
 
-
-__all__ = ["Errors", "auth", "providers", "server"]
+__all__ = ["Errors", "auth", "providers", "server", "defaults"]
 
