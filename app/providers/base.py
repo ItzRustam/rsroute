@@ -9,9 +9,10 @@ from typing import Any, Dict, List, Optional
 import warnings
 from langchain_core.tools import tool, StructuredTool
 from app.Errors import InvalidRequest
+from langchain_core.messages import AIMessage
 
 
-class BaseEstimator(ABC):
+class BaseChatModel(ABC):
     """Abstract base estimator class for LLM providers in RSRoute.
 
     Provides common parameter management, validation, and generation interfaces
@@ -44,14 +45,14 @@ class BaseEstimator(ABC):
         if query is None:
             raise InvalidRequest("`query` is given `None`")
 
-    def generate(self, query: Any = None) -> Any:
+    def generate(self, query: Any = None) -> AIMessage:
         """Generate a response for the given query.
 
         Args:
             query (Any): The input prompt or query.
 
         Returns:
-            Any: The response from the underlying model.
+            AIMessage: The response from the underlying model.
 
         Raises:
             InvalidRequest: If `query` is None or model is not initialized.
@@ -67,7 +68,7 @@ class BaseEstimator(ABC):
             raise InvalidRequest("Model is not initialized.")
         return model.invoke(input=query)
 
-    def __call__(self, query: Any = None) -> Any:
+    def __call__(self, query: Any = None) -> AIMessage:
         """Generate response on given `query`. Same as `generate()`."""
         return self.generate(query=query)
 
@@ -84,20 +85,9 @@ class BaseEstimator(ABC):
             return mangled
         return {}
 
-    def set_params(self, **params) -> "BaseEstimator":
-        """Set parameters for this estimator.
-
-        Args:
-            **params: Parameter names and values to update.
-
-        Returns:
-            self: The estimator instance.
-        """
-        self._params.update(params)
-        return self
 
 
-class BaseEstimatorAgent(BaseEstimator):
+class BaseAgentModel(BaseChatModel):
     """Abstract base estimator class for agentic LLM providers in RSRoute.
 
     Wraps chat models with tool-binding support via Langchain,
@@ -114,7 +104,7 @@ class BaseEstimatorAgent(BaseEstimator):
     def _fake_tool(self, name: str, description: str) -> StructuredTool:
         """Create a stub StructuredTool with given name and description."""
         @tool(name, description=description)
-        def created_tool():
+        def created_tool(): # it's a fake tool
             ...
         return created_tool
 
@@ -150,10 +140,10 @@ class BaseEstimatorAgent(BaseEstimator):
                 raise InvalidRequest("Give proper tool functioning `name` and `description`")
 
     # Compatibility aliases for previous private methods
-    def _BaseEstimatorAgent__fake_tool(self, name: str, description: str) -> StructuredTool:
+    def _BaseAgentModel__fake_tool(self, name: str, description: str) -> StructuredTool:
         return self._fake_tool(name=name, description=description)
 
-    def _BaseEstimatorAgent__create_fake_tools(self, tools_info: List[Dict[str, str]]) -> List[StructuredTool]:
+    def _BaseAgentModel__create_fake_tools(self, tools_info: List[Dict[str, str]]) -> List[StructuredTool]:
         return self._create_fake_tools(tools_info=tools_info)
 
 

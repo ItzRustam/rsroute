@@ -50,7 +50,8 @@ from langchain_mistralai import ChatMistralAI as _LangchainChatMistralAI
 from app.Errors import *
 from typing import Any, Dict, List, Optional
 import warnings
-from app.providers.base import BaseEstimator, BaseEstimatorAgent
+from app.providers.base import BaseChatModel, BaseAgentModel
+from app.defaults import DEFAULT_MISTRAL_MODEL, TEMPERATURE, MAX_TOKENS
 
 """
 TODO
@@ -58,13 +59,13 @@ Add Embedding Model Support
 """
 
 """Class ChatMistralAI Does not supports `Streaming` & model_kwargs. supports only text-to-text"""
-class ChatMistralAI(BaseEstimator):
+class ChatMistralAI(BaseChatModel):
     def __init__(
         self,
         api_key : str = None,
-        model : str = "mistral-small-2603",
-        temperature : float = 0.7,
-        max_tokens : int = 2048,
+        model : str = DEFAULT_MISTRAL_MODEL,
+        temperature : float = TEMPERATURE,
+        max_tokens : int = MAX_TOKENS,
         top_p : float = 1.0,
 
         # Base url
@@ -125,58 +126,18 @@ class ChatMistralAI(BaseEstimator):
         self.__model = self._model
         self.__params = self._params
 
-    def generate(self, query : Any = None):
-        """Generate response on given `query`.
-
-        Args:
-            query (Any): The input prompt or query to generate a response for.
-
-        Returns:
-            str: The generated response from MistralAI.
-
-        Raises:
-            InvalidRequest: If `query` is not provided.
-        """
-        return super().generate(query=query)
-
-    def get_params(self):
-        """Get the parameters used during initialization.
-
-        Returns:
-            Dict[Any]: A dictionary containing the initialization parameters.
-        """
-        return super().get_params()
-
-    """Example:
-        model = ChatMistralAI(model="mistral-small", api_key="my_mistral_api_key")
-        response = model("wtf")
-    """
-    def __call__(self, query : Any = None):
-        """Generate response on given `query`.
-
-        Args:
-            query (Any): The input prompt or query to generate a response for.
-
-        Returns:
-            str: The generated response from MistralAI.
-
-        Raises:
-            InvalidRequest: If `query` is not provided.
-        """
-        return self.generate(query=query)
-
 
 # Backward compatibility alias so nothing breaks
 MistralAI = ChatMistralAI
 
 
-class MistralAgent(BaseEstimatorAgent):
+class MistralAgent(BaseAgentModel):
     def __init__(
         self,
         api_key : str = None,
-        model : str = "mistral-small-2603",
-        temperature : float = 0.7,
-        max_tokens : int = 2048,
+        model : str = DEFAULT_MISTRAL_MODEL,
+        temperature : float = TEMPERATURE,
+        max_tokens : int = MAX_TOKENS,
         top_p : float = 1.0,
 
         # Base url
