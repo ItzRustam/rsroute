@@ -22,6 +22,7 @@ langchain-google-genai
 langchain-mistralai
 langchain-huggingface
 langchain-groq
+langchain-openrouter
 
 # HTTP Client
 httpx
