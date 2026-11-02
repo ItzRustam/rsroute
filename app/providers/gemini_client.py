@@ -39,25 +39,22 @@ service_tier: Sets processing priority ('standard', 'priority', or 'flex').
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from app.Errors import *
 from typing import Any, Dict, List
-from typing import Any, Dict, List
 from langchain.messages import AIMessage
-from langchain_core.tools import BaseTool
-from langchain.agents import create_agent
-from langchain_core.messages import BaseMessage, HumanMessage
 from rich import print as rprint # useful while debugging
 from langchain_core.tools import tool, StructuredTool
 import warnings
-from app.providers.base import BaseEstimator, BaseEstimatorAgent
+from app.providers.base import BaseChatModel, BaseAgentModel
+from app.defaults import DEFAULT_GEMINI_MODEL, TEMPERATURE, MAX_TOKENS
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
-class ChatGemini(BaseEstimator):
+class ChatGemini(BaseChatModel):
     def __init__(
         self,
         api_key : str = None,
-        model : str = "gemini-3.5-flash-lite",
-        temperature : float = 0.7,
-        max_tokens : int = 2048,
+        model : str = DEFAULT_GEMINI_MODEL,
+        temperature : float = TEMPERATURE,
+        max_tokens : int = MAX_TOKENS,
         top_p : int = 1.0,
 
         # Base url
@@ -65,7 +62,6 @@ class ChatGemini(BaseEstimator):
         thinking_level : str = None,
         thinking_budget : int = None
     ) -> AIMessage:
-        # TODO: Doc Strings
         """Integration with Google Gemini via Langchain.
 
         This class provides a wrapper around Langchain's `ChatGoogleGenerativeAI` to simplify
@@ -126,46 +122,8 @@ class ChatGemini(BaseEstimator):
         self.__model = self._model
         self.__params = self._params
 
-    # auto call
-    """Example:
-    model = ChatGemini(model="gemini-3.5-flash-lite", api_key="AQ.kjhdfu37jhkdflkjhfa73")
-    response = model("wtf")
-    """
-    def __call__(self, query : Any = None):
-        """Generate response on given `query`.
 
-        Args:
-            query (Any): The input prompt or query to generate a response for.
-
-        Returns:
-            str: The generated response from Gemini.
-
-        Raises:
-            InvalidRequest: If `query` is not provided.
-        """
-        return self.generate(query=query)
-
-
-    def generate(self, query : Any = None):
-        """Generate response on given `query`.
-
-        Args:
-            query (Any): The input prompt or query to generate a response for.
-
-        Returns:
-            str: The generated response from Gemini.
-
-        Raises:
-            InvalidRequest: If `query` is not provided.
-        """
-        return super().generate(query=query)
-
-    def get_params(self):
-        "Model initialized parameters"
-        return super().get_params()
-
-
-class GeminiAgent(BaseEstimatorAgent):
+class GeminiAgent(BaseAgentModel):
 
     def __fake_tool(self, name : str, description : str) -> StructuredTool:
         return self._fake_tool(name=name, description=description)
@@ -176,9 +134,9 @@ class GeminiAgent(BaseEstimatorAgent):
     def __init__(
         self,
         api_key : str = None,
-        model : str = "gemini-3.5-flash-lite",
-        temperature : float = 0.7,
-        max_tokens : int = 2048,
+        model : str = DEFAULT_GEMINI_MODEL,
+        temperature : float = TEMPERATURE,
+        max_tokens : int = MAX_TOKENS,
         top_p : int = 1.0,
 
         # Base url

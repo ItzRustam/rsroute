@@ -2,11 +2,11 @@
 # Copyright (c) 2026 ItzRustam
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Test cases for BaseEstimator, BaseEstimatorAgent, and agent server endpoints."""
+"""Test cases for BaseChatModel, BaseAgentModel, and agent server endpoints."""
 
 from app.providers import (
-    BaseEstimator,
-    BaseEstimatorAgent,
+    BaseChatModel,
+    BaseAgentModel,
     ChatGroq,
     ChatGemini,
     ChatMistralAI,
@@ -22,25 +22,25 @@ from test_server import web_search, WEB_SEARCH_TOOL
 
 
 def test_base_estimator_inheritance():
-    """Verify all provider classes inherit from BaseEstimator and BaseEstimatorAgent."""
-    # BaseEstimator inheritance
-    assert issubclass(ChatGroq, BaseEstimator), "ChatGroq must be a subclass of BaseEstimator"
-    assert issubclass(ChatGemini, BaseEstimator), "ChatGemini must be a subclass of BaseEstimator"
-    assert issubclass(ChatMistralAI, BaseEstimator), "ChatMistralAI must be a subclass of BaseEstimator"
-    assert issubclass(MistralAI, BaseEstimator), "MistralAI must be a subclass of BaseEstimator"
+    """Verify all provider classes inherit from BaseChatModel and BaseAgentModel."""
+    # BaseChatModel inheritance
+    assert issubclass(ChatGroq, BaseChatModel), "ChatGroq must be a subclass of BaseChatModel"
+    assert issubclass(ChatGemini, BaseChatModel), "ChatGemini must be a subclass of BaseChatModel"
+    assert issubclass(ChatMistralAI, BaseChatModel), "ChatMistralAI must be a subclass of BaseChatModel"
+    assert issubclass(MistralAI, BaseChatModel), "MistralAI must be a subclass of BaseChatModel"
     assert ChatMistralAI is MistralAI, "ChatMistralAI should alias MistralAI"
 
-    # BaseEstimatorAgent inheritance
-    assert issubclass(BaseEstimatorAgent, BaseEstimator), "BaseEstimatorAgent must be a subclass of BaseEstimator"
-    assert issubclass(GeminiAgent, BaseEstimatorAgent), "GeminiAgent must be a subclass of BaseEstimatorAgent"
-    assert issubclass(GroqAgent, BaseEstimatorAgent), "GroqAgent must be a subclass of BaseEstimatorAgent"
-    assert issubclass(MistralAgent, BaseEstimatorAgent), "MistralAgent must be a subclass of BaseEstimatorAgent"
+    # BaseAgentModel inheritance
+    assert issubclass(BaseAgentModel, BaseChatModel), "BaseAgentModel must be a subclass of BaseChatModel"
+    assert issubclass(GeminiAgent, BaseAgentModel), "GeminiAgent must be a subclass of BaseAgentModel"
+    assert issubclass(GroqAgent, BaseAgentModel), "GroqAgent must be a subclass of BaseAgentModel"
+    assert issubclass(MistralAgent, BaseAgentModel), "MistralAgent must be a subclass of BaseAgentModel"
 
-    return True, "All provider and agent classes inherit from BaseEstimator / BaseEstimatorAgent"
+    return True, "All provider and agent classes inherit from BaseChatModel / BaseAgentModel"
 
 
 def test_base_estimator_methods():
-    """Verify BaseEstimator parameter and query validation behavior."""
+    """Verify BaseChatModel parameter and query validation behavior."""
     # Test api_key=None raises InvalidRequest
     for cls in [ChatGroq, ChatGemini, ChatMistralAI]:
         try:
@@ -49,16 +49,13 @@ def test_base_estimator_methods():
         except InvalidRequest:
             pass
 
-    # Test get_params and set_params on initialized instance
+    # Test get_params on initialized instance
     groq = ChatGroq(api_key="fake_groq_key")
     params = groq.get_params()
     assert "model" in params, "params must contain 'model'"
     assert "max_tokens" in params, "params must contain 'max_tokens'"
 
-    groq.set_params(custom_param="test")
-    assert groq.get_params().get("custom_param") == "test", "set_params must update params"
-
-    return True, "BaseEstimator methods and validation passed"
+    return True, "BaseChatModel methods and validation passed"
 
 
 def test_agent_classes_validation():

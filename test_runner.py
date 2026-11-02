@@ -284,10 +284,10 @@ def test_gemini_agent():
 
 
 def base_estimator_testing():
-    print("=========== Running BaseEstimator, Agent Classes & Endpoints TestCases ===========")
+    print("=========== Running BaseChatModel, Agent Classes & Endpoints TestCases ===========")
     cases = [
-        ("TestCase #1 - BaseEstimator & BaseEstimatorAgent inheritance", test_base_estimator_inheritance),
-        ("TestCase #2 - BaseEstimator validation & parameter methods", test_base_estimator_methods),
+        ("TestCase #1 - BaseChatModel & BaseAgentModel inheritance", test_base_estimator_inheritance),
+        ("TestCase #2 - BaseChatModel validation & parameter methods", test_base_estimator_methods),
         ("TestCase #3 - Agent classes tools_info validation (Gemini, Groq, Mistral)", test_agent_classes_validation),
         ("TestCase #4 - DDGS web_search tool check", test_ddgs_web_search),
         ("TestCase #5 - Groq chat & parameters endpoints (/v1/groq/chat, /v1/groq/parameters)", test_groq_endpoints),
@@ -317,7 +317,7 @@ def main():
     results.append(gemini_testing())      # Gemini Testing
     results.append(groq_testing())        # Groq Testing
     results.append(test_gemini_agent())   # GeminiAgent tools_info Testing
-    results.append(base_estimator_testing())  # BaseEstimator & Groq endpoints Testing
+    results.append(base_estimator_testing())  # BaseChatModel & Groq endpoints Testing
 
     return all(results) # Return False if any Test Case Failed
     
