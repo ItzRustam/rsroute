@@ -11,6 +11,7 @@ from tests import api_config_test
 from tests import test_mistral
 from tests import test_gemini, test_gemini_agent
 from tests import test_groq
+from tests import test_openrouter, test_openrouter_agent
 from tests import (
     test_base_estimator_inheritance,
     test_base_estimator_methods,
@@ -28,6 +29,20 @@ from tests.gemini_agent_test import (
     case_tools_missing_description,
     case_tools_missing_name,
     case_tools_empty_dict_in_list,
+)
+from tests.openrouter_agent_test import (
+    case_tools_none as or_case_tools_none,
+    case_tools_empty_list as or_case_tools_empty_list,
+    case_tools_wrong_type_string as or_case_tools_wrong_type_string,
+    case_tools_wrong_type_int as or_case_tools_wrong_type_int,
+    case_tools_wrong_type_dict as or_case_tools_wrong_type_dict,
+    case_tools_missing_description as or_case_tools_missing_description,
+    case_tools_missing_name as or_case_tools_missing_name,
+    case_tools_empty_dict_in_list as or_case_tools_empty_dict_in_list,
+    case_api_key_none as or_case_api_key_none,
+    case_valid_initialization as or_case_valid_initialization,
+    case_agent_inheritance as or_case_agent_inheritance,
+    case_agent_methods as or_case_agent_methods,
 )
 from dotenv import load_dotenv
 load_dotenv()
@@ -283,12 +298,81 @@ def test_gemini_agent():
     return True
 
 
+def openrouter_testing():
+    FAKE_KEY = "sk-or-v1-fake_openrouter_key"
+    print("=========== Running ChatOpenRouter TestCases with Fake API ===========")
+
+    logger.info("TestCase #1 - KEY & query both None.")
+    val, result = test_openrouter()
+    logger.debug(f"case #1 result - {result}")
+    if not val:
+        logger.error("TestCase #1 Failed.")
+        return False
+
+    logger.info("TestCase #2 - query = None")
+    val, result = test_openrouter(KEY=FAKE_KEY)
+    logger.debug(f"case #2 result - {result}")
+    if not val:
+        logger.error("TestCase #2 Failed.")
+        return False
+
+    logger.info("TestCase #3 - valid value with real_api=False")
+    val, result = test_openrouter(KEY=FAKE_KEY, query="hey", real_api=False)
+    logger.debug(f"case #3 result - {result}")
+    if not val:
+        logger.error("TestCase #3 Failed.")
+        return False
+
+    logger.info("TestCase #4 - valid value with real_api=True with fake api")
+    val, result = test_openrouter(KEY=FAKE_KEY, query="hey", real_api=True)
+    logger.debug(f"case #4 result - {result}")
+    if val != False:
+        logger.error("TestCase #4 Failed.")
+        return False
+
+    print("=========== All Test Case Passed 4/4 ===========")
+    return True
+
+
+def test_openrouter_agent_cases():
+    print("=========== Running OpenRouterAgent tools_info TestCases ===========")
+
+    cases = [
+        ("TestCase #1 - tools_info=None",                 or_case_tools_none),
+        ("TestCase #2 - tools_info=[] (empty list)",      or_case_tools_empty_list),
+        ("TestCase #3 - tools_info='search' (string)",    or_case_tools_wrong_type_string),
+        ("TestCase #4 - tools_info=42 (int)",             or_case_tools_wrong_type_int),
+        ("TestCase #5 - tools_info={} (bare dict)",       or_case_tools_wrong_type_dict),
+        ("TestCase #6 - missing 'description' key",       or_case_tools_missing_description),
+        ("TestCase #7 - missing 'name' key",              or_case_tools_missing_name),
+        ("TestCase #8 - [{}] empty dict in list",         or_case_tools_empty_dict_in_list),
+        ("TestCase #9 - api_key=None",                   or_case_api_key_none),
+        ("TestCase #10 - Valid initialization & params",  or_case_valid_initialization),
+        ("TestCase #11 - OpenRouterAgent inheritance",   or_case_agent_inheritance),
+        ("TestCase #12 - OpenRouterAgent methods",       or_case_agent_methods),
+    ]
+
+    passed = 0
+    for label, case_fn in cases:
+        logger.info(label)
+        val, result = case_fn()
+        logger.debug(f"Result: {result}")
+        if val:
+            passed += 1
+        else:
+            logger.error(f"{label} — FAILED: {result}")
+            return False
+
+    print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
+    return True
+
+
 def base_estimator_testing():
     print("=========== Running BaseChatModel, Agent Classes & Endpoints TestCases ===========")
     cases = [
         ("TestCase #1 - BaseChatModel & BaseAgentModel inheritance", test_base_estimator_inheritance),
         ("TestCase #2 - BaseChatModel validation & parameter methods", test_base_estimator_methods),
-        ("TestCase #3 - Agent classes tools_info validation (Gemini, Groq, Mistral)", test_agent_classes_validation),
+        ("TestCase #3 - Agent classes tools_info validation (Gemini, Groq, Mistral, OpenRouter)", test_agent_classes_validation),
         ("TestCase #4 - DDGS web_search tool check", test_ddgs_web_search),
         ("TestCase #5 - Groq chat & parameters endpoints (/v1/groq/chat, /v1/groq/parameters)", test_groq_endpoints),
         ("TestCase #6 - Agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent)", test_agent_endpoints),
@@ -316,7 +400,9 @@ def main():
     results.append(mistral_testing())     # Mistral provider testing
     results.append(gemini_testing())      # Gemini Testing
     results.append(groq_testing())        # Groq Testing
+    results.append(openrouter_testing())  # OpenRouter Testing
     results.append(test_gemini_agent())   # GeminiAgent tools_info Testing
+    results.append(test_openrouter_agent_cases()) # OpenRouterAgent tools_info Testing
     results.append(base_estimator_testing())  # BaseChatModel & Groq endpoints Testing
 
     return all(results) # Return False if any Test Case Failed
