@@ -8,9 +8,9 @@ import sys
 from tests import auth_test
 from tests import get_logger
 from tests import api_config_test
-from tests import test_mistral
+from tests import test_mistral, test_mistral_agent
 from tests import test_gemini, test_gemini_agent
-from tests import test_groq
+from tests import test_groq, test_groq_agent
 from tests import test_openrouter, test_openrouter_agent
 from tests import (
     test_base_estimator_inheritance,
@@ -29,6 +29,34 @@ from tests.gemini_agent_test import (
     case_tools_missing_description,
     case_tools_missing_name,
     case_tools_empty_dict_in_list,
+)
+from tests.groq_agent_test import (
+    case_tools_none as groq_case_tools_none,
+    case_tools_empty_list as groq_case_tools_empty_list,
+    case_tools_wrong_type_string as groq_case_tools_wrong_type_string,
+    case_tools_wrong_type_int as groq_case_tools_wrong_type_int,
+    case_tools_wrong_type_dict as groq_case_tools_wrong_type_dict,
+    case_tools_missing_description as groq_case_tools_missing_description,
+    case_tools_missing_name as groq_case_tools_missing_name,
+    case_tools_empty_dict_in_list as groq_case_tools_empty_dict_in_list,
+    case_api_key_none as groq_case_api_key_none,
+    case_valid_initialization as groq_case_valid_initialization,
+    case_agent_inheritance as groq_case_agent_inheritance,
+    case_agent_methods as groq_case_agent_methods,
+)
+from tests.mistral_agent_test import (
+    case_tools_none as mistral_case_tools_none,
+    case_tools_empty_list as mistral_case_tools_empty_list,
+    case_tools_wrong_type_string as mistral_case_tools_wrong_type_string,
+    case_tools_wrong_type_int as mistral_case_tools_wrong_type_int,
+    case_tools_wrong_type_dict as mistral_case_tools_wrong_type_dict,
+    case_tools_missing_description as mistral_case_tools_missing_description,
+    case_tools_missing_name as mistral_case_tools_missing_name,
+    case_tools_empty_dict_in_list as mistral_case_tools_empty_dict_in_list,
+    case_api_key_none as mistral_case_api_key_none,
+    case_valid_initialization as mistral_case_valid_initialization,
+    case_agent_inheritance as mistral_case_agent_inheritance,
+    case_agent_methods as mistral_case_agent_methods,
 )
 from tests.openrouter_agent_test import (
     case_tools_none as or_case_tools_none,
@@ -298,6 +326,72 @@ def test_gemini_agent():
     return True
 
 
+def test_groq_agent_cases():
+    print("=========== Running GroqAgent tools_info TestCases ===========")
+
+    cases = [
+        ("TestCase #1 - tools_info=None",                 groq_case_tools_none),
+        ("TestCase #2 - tools_info=[] (empty list)",      groq_case_tools_empty_list),
+        ("TestCase #3 - tools_info='search' (string)",    groq_case_tools_wrong_type_string),
+        ("TestCase #4 - tools_info=42 (int)",             groq_case_tools_wrong_type_int),
+        ("TestCase #5 - tools_info={} (bare dict)",       groq_case_tools_wrong_type_dict),
+        ("TestCase #6 - missing 'description' key",       groq_case_tools_missing_description),
+        ("TestCase #7 - missing 'name' key",              groq_case_tools_missing_name),
+        ("TestCase #8 - [{}] empty dict in list",         groq_case_tools_empty_dict_in_list),
+        ("TestCase #9 - api_key=None",                   groq_case_api_key_none),
+        ("TestCase #10 - Valid initialization & params",  groq_case_valid_initialization),
+        ("TestCase #11 - GroqAgent inheritance",         groq_case_agent_inheritance),
+        ("TestCase #12 - GroqAgent methods",             groq_case_agent_methods),
+    ]
+
+    passed = 0
+    for label, case_fn in cases:
+        logger.info(label)
+        val, result = case_fn()
+        logger.debug(f"Result: {result}")
+        if val:
+            passed += 1
+        else:
+            logger.error(f"{label} — FAILED: {result}")
+            return False
+
+    print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
+    return True
+
+
+def test_mistral_agent_cases():
+    print("=========== Running MistralAgent tools_info TestCases ===========")
+
+    cases = [
+        ("TestCase #1 - tools_info=None",                 mistral_case_tools_none),
+        ("TestCase #2 - tools_info=[] (empty list)",      mistral_case_tools_empty_list),
+        ("TestCase #3 - tools_info='search' (string)",    mistral_case_tools_wrong_type_string),
+        ("TestCase #4 - tools_info=42 (int)",             mistral_case_tools_wrong_type_int),
+        ("TestCase #5 - tools_info={} (bare dict)",       mistral_case_tools_wrong_type_dict),
+        ("TestCase #6 - missing 'description' key",       mistral_case_tools_missing_description),
+        ("TestCase #7 - missing 'name' key",              mistral_case_tools_missing_name),
+        ("TestCase #8 - [{}] empty dict in list",         mistral_case_tools_empty_dict_in_list),
+        ("TestCase #9 - api_key=None",                   mistral_case_api_key_none),
+        ("TestCase #10 - Valid initialization & params",  mistral_case_valid_initialization),
+        ("TestCase #11 - MistralAgent inheritance",       mistral_case_agent_inheritance),
+        ("TestCase #12 - MistralAgent methods",           mistral_case_agent_methods),
+    ]
+
+    passed = 0
+    for label, case_fn in cases:
+        logger.info(label)
+        val, result = case_fn()
+        logger.debug(f"Result: {result}")
+        if val:
+            passed += 1
+        else:
+            logger.error(f"{label} — FAILED: {result}")
+            return False
+
+    print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
+    return True
+
+
 def openrouter_testing():
     FAKE_KEY = "sk-or-v1-fake_openrouter_key"
     print("=========== Running ChatOpenRouter TestCases with Fake API ===========")
@@ -402,6 +496,8 @@ def main():
     results.append(groq_testing())        # Groq Testing
     results.append(openrouter_testing())  # OpenRouter Testing
     results.append(test_gemini_agent())   # GeminiAgent tools_info Testing
+    results.append(test_groq_agent_cases()) # GroqAgent tools_info Testing
+    results.append(test_mistral_agent_cases()) # MistralAgent tools_info Testing
     results.append(test_openrouter_agent_cases()) # OpenRouterAgent tools_info Testing
     results.append(base_estimator_testing())  # BaseChatModel & Groq endpoints Testing
 
