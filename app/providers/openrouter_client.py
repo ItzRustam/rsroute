@@ -50,8 +50,8 @@ class ChatOpenRouter(BaseChatModel):
         model : str = DEFAULT_OPENROUTER_MODEL,
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
-        app_title : str = "RSRoute Server",
-        app_url : str = "https://www.github.com/ItzRustam/rsroute",
+        app_title : str = "RSRoute",
+        app_url : str = "https://www.rsroute.freedev.app/",
         app_categories : List[str] = None,
         max_retries : int = 2,
 

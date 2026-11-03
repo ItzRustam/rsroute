@@ -47,6 +47,7 @@ def root():
             },
             "NOTE": "use exact `master_key` given in `.env` or else it won't work. don't forget to put API key which model you wanna use.",
             "GitHub": "https://www.github.com/ItzRustam/rsroute",
+            "rsroute": "https://www.rsroute.freedev.app/",
             "By": "ItzRustam (Rustam Bhadouriya)",
             "version": "v1-starter-version",
         }
