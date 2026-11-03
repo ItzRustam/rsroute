@@ -6,7 +6,7 @@ from .base import BaseChatModel, BaseAgentModel
 from .mistral_client import MistralAI, ChatMistralAI, MistralAgent, ChatMistralAgent
 from .gemini_client import ChatGemini, GeminiAgent
 from .groq_client import ChatGroq, GroqAgent
-from .openrouter_client import ChatOpenRouter
+from .openrouter_client import ChatOpenRouter, OpenRouterAgent, ChatOpenRouterAgent
 
 __all__ = [
     "BaseChatModel",
@@ -19,7 +19,9 @@ __all__ = [
     "GeminiAgent",
     "ChatGroq",
     "GroqAgent",
-    "ChatOpenRouter"
+    "ChatOpenRouter",
+    "OpenRouterAgent",
+    "ChatOpenRouterAgent"
 ]
 
 """Parameters for Each Function Call
