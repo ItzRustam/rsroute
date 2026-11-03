@@ -118,6 +118,7 @@ END_POINTS : Dict[str, str] = {
     "gemini" : f"{URL}/v1/gemini",
     "mistral" : f"{URL}/v1/mistral",
     "groq" : f"{URL}/v1/groq",
+    "openrouter" : f"{URL}/v1/openrouter",
 }
 
 
@@ -139,6 +140,7 @@ class check_server:
     * Gemini (Chat & Agent)
     * MistralAI (Chat & Agent)
     * Groq (Chat & Agent)
+    * OpenRouter (Chat & Agent)
     """
 
     @staticmethod
@@ -255,6 +257,55 @@ class check_server:
         return check_status(status_code=response.status_code), response.json()
 
     @staticmethod
+    def check_openrouter_with_key():
+        data = DATA.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "deepseek/deepseek-v4.1-flash"
+        data["max_tokens"] = 4096
+        response = rq.post(url=f"{END_POINTS['openrouter']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openrouter_without_key():
+        data = DATA_WMK.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "deepseek/deepseek-v4.1-flash"
+        data["max_tokens"] = 4096
+        response = rq.post(url=f"{END_POINTS['openrouter']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openrouter_agent_with_key():
+        data = AGENT_DATA.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "deepseek/deepseek-v4.1-flash"
+        data["max_tokens"] = 4096
+        response = rq.post(url=f"{END_POINTS['openrouter']}/agent", json=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openrouter_agent_without_key():
+        data = AGENT_DATA_WMK.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "deepseek/deepseek-v4.1-flash"
+        data["max_tokens"] = 4096
+        response = rq.post(url=f"{END_POINTS['openrouter']}/agent", json=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openrouter_params():
+        response = rq.get(url=f"{END_POINTS['openrouter']}/parameters")
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
     def check_root():
         response = rq.get(url=f"{URL}/")
         return check_status(status_code=response.status_code), response.json()
@@ -350,6 +401,33 @@ if __name__ == "__main__":
     status, output = check_server.check_groq_params()
     results.append(status)
     print("Groq params:", status)
+    pprint(output)
+
+    # OpenRouter Chat checks
+    status, output = check_server.check_openrouter_with_key()
+    results.append(status)
+    print("OpenRouter Chat with key:", status)
+    pprint(output)
+
+    status, output = check_server.check_openrouter_without_key()
+    results.append(status)
+    print("OpenRouter Chat without key:", status)
+    pprint(output)
+
+    # OpenRouter Agent checks (using web_search tool with DDGS)
+    status, output = check_server.check_openrouter_agent_with_key()
+    results.append(status)
+    print("OpenRouter Agent with key:", status)
+    pprint(output)
+
+    status, output = check_server.check_openrouter_agent_without_key()
+    results.append(status)
+    print("OpenRouter Agent without key:", status)
+    pprint(output)
+
+    status, output = check_server.check_openrouter_params()
+    results.append(status)
+    print("OpenRouter params:", status)
     pprint(output)
 
     all_passed = all(results)

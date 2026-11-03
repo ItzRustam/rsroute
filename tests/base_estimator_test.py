@@ -145,12 +145,49 @@ def test_groq_endpoints():
     return True, "Groq endpoints /v1/groq/chat & /v1/groq/parameters passed"
 
 
-def test_agent_endpoints():
-    """Verify /v1/gemini/agent, /v1/groq/agent, and /v1/mistral/agent endpoints."""
+def test_openrouter_endpoints():
+    """Verify /v1/openrouter/chat and /v1/openrouter/parameters endpoints."""
     server = create_server()
     client = TestClient(server)
 
-    endpoints = ["/v1/gemini/agent", "/v1/groq/agent", "/v1/mistral/agent"]
+    # Plural and singular parameters endpoints
+    res_params = client.get("/v1/openrouter/parameters")
+    assert res_params.status_code == 200, f"Expected 200, got {res_params.status_code}"
+    params_data = res_params.json()
+
+    res_param = client.get("/v1/openrouter/parameter")
+    assert res_param.status_code == 200, f"Expected 200, got {res_param.status_code}"
+
+    # Verify parameters info adheres to requirements
+    assert "top_p" not in params_data, "'top_p' must not be in OpenRouter parameters info"
+    assert "max_tokens" in params_data, "'max_tokens' must be in OpenRouter parameters info"
+    assert "query" in params_data, "'query' must be in OpenRouter parameters info"
+    assert "master_key" in params_data, "'master_key' must be in OpenRouter parameters info"
+    assert "model" in params_data, "'model' must be in OpenRouter parameters info"
+    assert "temperature" in params_data, "'temperature' must be in OpenRouter parameters info"
+    assert "app_title" in params_data, "'app_title' must be in OpenRouter parameters info"
+    assert "app_url" in params_data, "'app_url' must be in OpenRouter parameters info"
+    assert "providers" in params_data, "'providers' must be in OpenRouter parameters info"
+
+    # Test chat endpoint with invalid master key (when auth enabled)
+    res_chat_bad_auth = client.post("/v1/openrouter/chat", json={"query": "Hello", "master_key": "bad_key"})
+    assert res_chat_bad_auth.status_code == 200
+    assert res_chat_bad_auth.json().get("login") is False
+
+    # Test chat endpoint with valid master key
+    res_chat_valid_auth = client.post("/v1/openrouter/chat", json={"query": "Hello", "master_key": "RSRoute_my_key"})
+    assert res_chat_valid_auth.status_code == 200
+    assert "login" in res_chat_valid_auth.json()
+
+    return True, "OpenRouter endpoints /v1/openrouter/chat & /v1/openrouter/parameters passed"
+
+
+def test_agent_endpoints():
+    """Verify /v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent, and /v1/openrouter/agent endpoints."""
+    server = create_server()
+    client = TestClient(server)
+
+    endpoints = ["/v1/gemini/agent", "/v1/groq/agent", "/v1/mistral/agent", "/v1/openrouter/agent"]
 
     for ep in endpoints:
         # Invalid auth
@@ -173,35 +210,5 @@ def test_agent_endpoints():
         assert "login" in res_valid.json(), f"{ep} must return login status"
         assert "tool_calls" in res_valid.json(), f"{ep} must return tool_calls field"
 
-    return True, "All agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent) passed"
-
-def test_agent_endpoints():
-    """Verify /v1/gemini/agent, /v1/groq/agent, and /v1/mistral/agent endpoints."""
-    server = create_server()
-    client = TestClient(server)
-
-    endpoints = ["/v1/gemini/agent", "/v1/groq/agent", "/v1/mistral/agent"]
-
-    for ep in endpoints:
-        # Invalid auth
-        res_bad = client.post(ep, json={
-            "query": "Hello",
-            "master_key": "invalid_key",
-            "tools_info": [WEB_SEARCH_TOOL]
-        })
-        assert res_bad.status_code == 200, f"{ep} expected 200, got {res_bad.status_code}"
-        assert res_bad.json().get("login") is False, f"{ep} login should be False with invalid key"
-        assert "tool_calls" in res_bad.json(), f"{ep} must return tool_calls field in AgentTemplate"
-
-        # Valid master key
-        res_valid = client.post(ep, json={
-            "query": "Hello",
-            "master_key": "RSRoute_my_key",
-            "tools_info": [WEB_SEARCH_TOOL]
-        })
-        assert res_valid.status_code == 200, f"{ep} expected 200, got {res_valid.status_code}"
-        assert "login" in res_valid.json(), f"{ep} must return login status"
-        assert "tool_calls" in res_valid.json(), f"{ep} must return tool_calls field"
-
-    return True, "All agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent) passed"
+    return True, "All agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent, /v1/openrouter/agent) passed"
 
