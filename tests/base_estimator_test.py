@@ -11,9 +11,11 @@ from app.providers import (
     ChatGemini,
     ChatMistralAI,
     MistralAI,
+    ChatOpenRouter,
     GeminiAgent,
     GroqAgent,
     MistralAgent,
+    OpenRouterAgent,
 )
 from app.Errors import InvalidRequest
 from fastapi.testclient import TestClient
@@ -28,6 +30,7 @@ def test_base_estimator_inheritance():
     assert issubclass(ChatGemini, BaseChatModel), "ChatGemini must be a subclass of BaseChatModel"
     assert issubclass(ChatMistralAI, BaseChatModel), "ChatMistralAI must be a subclass of BaseChatModel"
     assert issubclass(MistralAI, BaseChatModel), "MistralAI must be a subclass of BaseChatModel"
+    assert issubclass(ChatOpenRouter, BaseChatModel), "ChatOpenRouter must be a subclass of BaseChatModel"
     assert ChatMistralAI is MistralAI, "ChatMistralAI should alias MistralAI"
 
     # BaseAgentModel inheritance
@@ -35,6 +38,7 @@ def test_base_estimator_inheritance():
     assert issubclass(GeminiAgent, BaseAgentModel), "GeminiAgent must be a subclass of BaseAgentModel"
     assert issubclass(GroqAgent, BaseAgentModel), "GroqAgent must be a subclass of BaseAgentModel"
     assert issubclass(MistralAgent, BaseAgentModel), "MistralAgent must be a subclass of BaseAgentModel"
+    assert issubclass(OpenRouterAgent, BaseAgentModel), "OpenRouterAgent must be a subclass of BaseAgentModel"
 
     return True, "All provider and agent classes inherit from BaseChatModel / BaseAgentModel"
 
@@ -42,7 +46,7 @@ def test_base_estimator_inheritance():
 def test_base_estimator_methods():
     """Verify BaseChatModel parameter and query validation behavior."""
     # Test api_key=None raises InvalidRequest
-    for cls in [ChatGroq, ChatGemini, ChatMistralAI]:
+    for cls in [ChatGroq, ChatGemini, ChatMistralAI, ChatOpenRouter]:
         try:
             cls(api_key=None)
             return False, f"{cls.__name__} should raise InvalidRequest when api_key=None"
@@ -63,7 +67,7 @@ def test_agent_classes_validation():
     tool = {"name": "web_search", "description": "Search the web"}
 
     # Test api_key=None
-    for agent_cls in [GeminiAgent, GroqAgent, MistralAgent]:
+    for agent_cls in [GeminiAgent, GroqAgent, MistralAgent, OpenRouterAgent]:
         try:
             agent_cls(api_key=None, tools_info=[tool])
             return False, f"{agent_cls.__name__} should raise InvalidRequest when api_key=None"
