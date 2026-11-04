@@ -44,7 +44,7 @@ from rich import print as rprint # useful while debugging
 from langchain_core.tools import tool, StructuredTool
 import warnings
 from app.providers.base import BaseChatModel, BaseAgentModel
-from app.defaults import DEFAULT_GEMINI_MODEL, TEMPERATURE, MAX_TOKENS
+from app.defaults import DEFAULT_GEMINI_MODEL, TEMPERATURE, MAX_TOKENS, MAX_RETRIES
 
 """Class ChatGemini Does not supports `Streaming` & model_kwrags. supports only text-to-text"""
 
@@ -56,6 +56,7 @@ class ChatGemini(BaseChatModel):
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
         top_p : int = 1.0,
+        max_retries : int = MAX_RETRIES,
 
         # Base url
         end_point : str = None,
@@ -103,6 +104,7 @@ class ChatGemini(BaseChatModel):
             "temperature" : temperature,
             "max_tokens" : max_tokens,
             "top_p" : top_p,
+            "max_retries" : max_retries,
             "end_point" : end_point,
             "thinking_level" : thinking_level,
             "thinking_budget": thinking_budget
@@ -116,6 +118,7 @@ class ChatGemini(BaseChatModel):
                                               base_url=end_point,
                                               thinking_level=thinking_level,
                                               thinking_budget=thinking_budget,
+                                              max_retries=max_retries,
                                               google_api_key=api_key)
 
         # Backwards compatibility attributes
@@ -138,6 +141,7 @@ class GeminiAgent(BaseAgentModel):
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
         top_p : int = 1.0,
+        max_retries : int = MAX_RETRIES,
 
         # Base url
         end_point : str = None,
@@ -159,6 +163,7 @@ class GeminiAgent(BaseAgentModel):
             "temperature" : temperature,
             "max_tokens" : max_tokens,
             "top_p" : top_p,
+            "max_retries" : max_retries,
             "end_point" : end_point,
             "thinking_level" : thinking_level,
             "thinking_budget": thinking_budget,
@@ -173,6 +178,7 @@ class GeminiAgent(BaseAgentModel):
                                               base_url=end_point,
                                               thinking_level=thinking_level,
                                               thinking_budget=thinking_budget,
+                                              max_retries=max_retries,
                                               google_api_key=api_key).bind_tools(tools=created_tools)
 
         self.__agent = self._model

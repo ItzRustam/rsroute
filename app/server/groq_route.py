@@ -5,7 +5,6 @@
 """Purpose: separate Groq Route from other routes."""
 
 from app.providers import ChatGroq, GroqAgent
-from app.providers.groq_client import DEFAULT_GROQ_MODEL
 from fastapi import APIRouter, Body
 from app.Errors import *
 from dotenv import load_dotenv
@@ -18,6 +17,7 @@ from app.server.tools import (
     convertAgentResponse,
     PARAMS_INFO,
 )
+from app.defaults import DEFAULT_GROQ_MODEL, MAX_TOKENS, TEMPERATURE, MAX_RETRIES, QUERY
 from typing import Any, Dict, List, Optional
 
 load_dotenv()  # Loading Environment
@@ -52,11 +52,12 @@ def parameters() -> dict:
 
 @router.post("/chat")
 def chat(
-    query: Any = Body("Hello"),
+    query: Any = Body(QUERY),
     master_key: str = Body(""),
     model: str = Body(DEFAULT_GROQ_MODEL),
-    temperature: float = Body(0.7),
-    max_tokens: int = Body(2048),
+    temperature: float = Body(TEMPERATURE),
+    max_tokens: int = Body(MAX_TOKENS),
+    max_retries: int = Body(MAX_RETRIES),
     end_point: Optional[str] = Body(None),
 ):
     """Chat endpoint for Groq models."""
@@ -101,6 +102,7 @@ def chat(
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
+        max_retries=max_retries,
         end_point=end_point,
     )
 
@@ -129,11 +131,12 @@ def chat(
 
 @router.post("/agent")
 def agent(
-    query: Any = Body("Hello"),
+    query: Any = Body(QUERY),
     master_key: str = Body(""),
     model: str = Body(DEFAULT_GROQ_MODEL),
-    temperature: float = Body(0.7),
-    max_tokens: int = Body(2048),
+    temperature: float = Body(TEMPERATURE),
+    max_tokens: int = Body(MAX_TOKENS),
+    max_retries: int = Body(MAX_RETRIES),
     end_point: Optional[str] = Body(None),
     tools_info: List[Dict[str, str]] = Body(None)
 ):
@@ -180,6 +183,7 @@ def agent(
             model=model,
             temperature=temperature,
             max_tokens=max_tokens,
+            max_retries=max_retries,
             end_point=end_point,
             tools_info=tools_info
         )

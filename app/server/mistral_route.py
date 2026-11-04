@@ -20,6 +20,7 @@ from app.server.tools import (
     convertAgentResponse,
     PARAMS_INFO,
 )
+from app.defaults import DEFAULT_MISTRAL_MODEL, MAX_TOKENS, TEMPERATURE, MAX_RETRIES, QUERY
 
 load_dotenv()  # Loading Environment
 
@@ -41,12 +42,13 @@ def parameters() -> dict:
 
 @router.post("/chat")
 def chat(
-         query: Any = Body("Hello"),
+         query: Any = Body(QUERY),
          master_key: str = Body(""),
-         model: str = Body("mistral-small-2603"),
-         temperature: float = Body(0.7),
-         max_tokens: int = Body(2048),
+         model: str = Body(DEFAULT_MISTRAL_MODEL),
+         temperature: float = Body(TEMPERATURE),
+         max_tokens: int = Body(MAX_TOKENS),
          top_p: float = Body(1.0),
+         max_retries: int = Body(MAX_RETRIES),
          # Base url
          end_point: Optional[str] = Body(None),
          ):
@@ -82,6 +84,7 @@ def chat(
                                           temperature=temperature,
                                           max_tokens=max_tokens,
                                           top_p=top_p,
+                                          max_retries=max_retries,
                                           end_point=end_point,
                                           )
 
@@ -100,12 +103,13 @@ def chat(
 
 @router.post("/agent")
 def agent(
-    query: Any = Body("Hello"),
+    query: Any = Body(QUERY),
     master_key: str = Body(""),
-    model: str = Body("mistral-small-2603"),
-    temperature: float = Body(0.7),
-    max_tokens: int = Body(2048),
+    model: str = Body(DEFAULT_MISTRAL_MODEL),
+    temperature: float = Body(TEMPERATURE),
+    max_tokens: int = Body(MAX_TOKENS),
     top_p: float = Body(1.0),
+    max_retries: int = Body(MAX_RETRIES),
     end_point: Optional[str] = Body(None),
     tools_info: List[Dict[str, str]] = Body(None)
 ):
@@ -153,6 +157,7 @@ def agent(
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,
+            max_retries=max_retries,
             end_point=end_point,
             tools_info=tools_info
         )

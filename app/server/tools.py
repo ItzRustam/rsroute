@@ -15,6 +15,7 @@ PARAMS_INFO : Dict[str, str] = {
     "model": "Model name",
     "temperature": "Model creativity scale from 0.0 to 1.0 default is 0.7. Mid-Creative",
     "max_tokens": "Maximum Tokens To generate in each request",
+    "max_retries": "Maximum automated retry attempts on request failure (default: 2)",
     "top_p": "Nucleus sampling token selection boundary (0.0 to 1.0)",
     "end_point": "Custom url to connect to model.",
     "tools_info" : "Bind Your Tool. (only in `/agent` mode)",

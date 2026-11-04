@@ -8,6 +8,11 @@ DEFAULT_GROQ_MODEL = "openai/gpt-oss-120b"
 DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
 DEFAULT_MISTRAL_MODEL = "mistral-small-2603"
 DEFAULT_OPENROUTER_MODEL = "deepseek/deepseek-v4.1-flash"
+OPENAI_DEFAULT_MODEL = "gpt-6-luna"
 
 TEMPERATURE = 0.7
 MAX_TOKENS = 4096 # Increased Max token due to Agentic Workflows etc
+TIMEOUT = 60
+MAX_RETRIES = 2
+
+QUERY = "Explain Space-Time Theory in 50 Words."
