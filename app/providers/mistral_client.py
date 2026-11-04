@@ -51,7 +51,7 @@ from app.Errors import *
 from typing import Any, Dict, List, Optional
 import warnings
 from app.providers.base import BaseChatModel, BaseAgentModel
-from app.defaults import DEFAULT_MISTRAL_MODEL, TEMPERATURE, MAX_TOKENS
+from app.defaults import DEFAULT_MISTRAL_MODEL, TEMPERATURE, MAX_TOKENS, MAX_RETRIES
 
 """
 TODO
@@ -67,6 +67,7 @@ class ChatMistralAI(BaseChatModel):
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
         top_p : float = 1.0,
+        max_retries : int = MAX_RETRIES,
 
         # Base url
         end_point : str = None,
@@ -111,6 +112,7 @@ class ChatMistralAI(BaseChatModel):
                                              max_tokens=max_tokens,
                                              top_p=top_p,
                                              base_url=end_point,
+                                             max_retries=max_retries,
                                              api_key=api_key)
 
         # Saving model initialize parameters
@@ -119,6 +121,7 @@ class ChatMistralAI(BaseChatModel):
             "temperature" : temperature,
             "max_tokens" : max_tokens,
             "top_p" : top_p,
+            "max_retries" : max_retries,
             "end_point" : end_point, # base_url,
         }
 
@@ -139,6 +142,7 @@ class MistralAgent(BaseAgentModel):
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
         top_p : float = 1.0,
+        max_retries : int = MAX_RETRIES,
 
         # Base url
         end_point : str = None,
@@ -176,6 +180,7 @@ class MistralAgent(BaseAgentModel):
             "temperature" : temperature,
             "max_tokens" : max_tokens,
             "top_p" : top_p,
+            "max_retries" : max_retries,
             "end_point" : end_point,
             "binded_tools": tools_info,
         }
@@ -186,6 +191,7 @@ class MistralAgent(BaseAgentModel):
             max_tokens=max_tokens,
             top_p=top_p,
             base_url=end_point,
+            max_retries=max_retries,
             api_key=api_key
         ).bind_tools(tools=created_tools)
 

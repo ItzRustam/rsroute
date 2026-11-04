@@ -21,7 +21,7 @@ from app.Errors import *
 from typing import Any, Dict, List, Optional
 import warnings
 from app.providers.base import BaseChatModel, BaseAgentModel
-from app.defaults import DEFAULT_GROQ_MODEL, MAX_TOKENS, TEMPERATURE
+from app.defaults import DEFAULT_GROQ_MODEL, MAX_TOKENS, TEMPERATURE, MAX_RETRIES
 
 """Class ChatGroq Does not supports `Streaming` & model_kwargs. supports only text-to-text"""
 class ChatGroq(BaseChatModel):
@@ -31,6 +31,7 @@ class ChatGroq(BaseChatModel):
         model : str = DEFAULT_GROQ_MODEL,
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
+        max_retries : int = MAX_RETRIES,
 
         # Base url
         end_point : str = None,
@@ -65,6 +66,7 @@ class ChatGroq(BaseChatModel):
                                           temperature=temperature,
                                           max_tokens=max_tokens,
                                           base_url=end_point,
+                                          max_retries=max_retries,
                                           api_key=api_key)
 
         # Saving model initialize parameters
@@ -72,6 +74,7 @@ class ChatGroq(BaseChatModel):
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
+            "max_retries" : max_retries,
             "end_point" : end_point,  # base_url
         }
 
@@ -88,6 +91,7 @@ class GroqAgent(BaseAgentModel):
         model : str = DEFAULT_GROQ_MODEL,
         temperature : float = TEMPERATURE,
         max_tokens : int = MAX_TOKENS,
+        max_retries : int = MAX_RETRIES,
 
         # Base url
         end_point : str = None,
@@ -123,6 +127,7 @@ class GroqAgent(BaseAgentModel):
             "model" : model,
             "temperature" : temperature,
             "max_tokens" : max_tokens,
+            "max_retries" : max_retries,
             "end_point" : end_point,
             "binded_tools": tools_info,
         }
@@ -132,6 +137,7 @@ class GroqAgent(BaseAgentModel):
             temperature=temperature,
             max_tokens=max_tokens,
             base_url=end_point,
+            max_retries=max_retries,
             api_key=api_key
         ).bind_tools(tools=created_tools)
 
