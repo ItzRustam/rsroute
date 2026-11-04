@@ -15,6 +15,8 @@ from app.server.tools import ResponseTemplate, convertResponse, AgentTemplate, c
 from app.server.tools import PARAMS_INFO
 from pydantic import BaseModel, Field
 
+from app.defaults import DEFAULT_GEMINI_MODEL, MAX_RETRIES, MAX_TOKENS, TEMPERATURE, QUERY
+
 from typing import Dict, Any, List, Optional
 
 load_dotenv() # Loading Environment
@@ -40,12 +42,13 @@ def parameters() -> dict:
 
 @router.post("/chat")
 def chat(
-        query : Any = Body("Hello"),
+        query : Any = Body(QUERY),
         master_key : str = Body(""),
-        model : str = Body("gemini-3.5-flash-lite"),
-        temperature : float = Body(0.7),
-        max_tokens : int = Body(2048),
+        model : str = Body(DEFAULT_GEMINI_MODEL),
+        temperature : float = Body(TEMPERATURE),
+        max_tokens : int = Body(MAX_TOKENS),
         top_p : float = Body(1.0),
+        max_retries: float = Body(MAX_RETRIES),
         # Base url
         end_point : str = Body(None),
         thinking_level : str = Body(None),
@@ -85,6 +88,7 @@ def chat(
                        model=model,
                        temperature=temperature,
                        max_tokens=max_tokens,
+                       max_retries=max_retries,
                        top_p=top_p,
                        end_point=end_point,
                        thinking_budget=thinking_budget,
@@ -104,26 +108,14 @@ def chat(
 
 
 
-# Agent payload for json
-# class AgentRequest(BaseModel):
-#     query: str = "Hello"
-#     master_key: str = ""
-#     model: str = "gemini-3.5-flash-lite"
-#     temperature: float = 0.7
-#     max_tokens: int = 2048
-#     top_p: float = 1.0  # Changed to float since top_p is usually a decimal
-#     end_point: Optional[str] = None
-#     thinking_level: Optional[str] = None
-#     thinking_budget: Optional[int] = None
-#     tools_info: Optional[List[Dict[str, str]]] = None
-
 @router.post("/agent")
 def agent(
-    query: Any = Body("Hello"),
+    query: Any = Body(QUERY),
     master_key: str = Body(""), 
-    model: str = Body("gemini-3.5-flash-lite"), 
-    temperature: float = Body(0.7),
-    max_tokens: int = Body(2048),
+    model: str = Body(DEFAULT_GEMINI_MODEL), 
+    temperature: float = Body(TEMPERATURE),
+    max_tokens: int = Body(MAX_TOKENS),
+    max_retries : int = Body(MAX_RETRIES),
     top_p: float = Body(1.0),
     end_point: str = Body(None),
     thinking_level: str = Body(None),
@@ -160,6 +152,7 @@ def agent(
                            model=model,
                            temperature=temperature,
                            max_tokens=max_tokens,
+                           max_retries=max_retries,
                            top_p=top_p,
                            end_point=end_point,
                            thinking_budget=thinking_budget,

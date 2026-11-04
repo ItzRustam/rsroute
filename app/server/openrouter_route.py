@@ -5,7 +5,7 @@
 """Purpose: separate OpenRouter Route from other routes."""
 
 from app.providers import ChatOpenRouter, OpenRouterAgent
-from app.defaults import DEFAULT_OPENROUTER_MODEL, MAX_TOKENS, TEMPERATURE
+from app.defaults import DEFAULT_OPENROUTER_MODEL, MAX_TOKENS, TEMPERATURE, MAX_RETRIES, QUERY
 from fastapi import APIRouter, Body
 from app.Errors import *
 from dotenv import load_dotenv
@@ -43,14 +43,13 @@ def parameters() -> dict:
     params["app_title"] = "Application title for OpenRouter rankings (default: 'RSRoute')"
     params["app_url"] = "Application URL for OpenRouter rankings (default: 'https://www.rsroute.freedev.app/')"
     params["app_categories"] = "List of category strings for OpenRouter rankings"
-    params["max_retries"] = "Maximum automated retry attempts on request failure (default: 2)"
     params["providers"] = "OpenRouter provider preferences dictionary (e.g. {'order': ['OpenAI']})"
     return params
 
 
 @router.post("/chat")
 def chat(
-    query: Any = Body("Hello"),
+    query: Any = Body(QUERY),
     master_key: str = Body(""),
     model: str = Body(DEFAULT_OPENROUTER_MODEL),
     temperature: float = Body(TEMPERATURE),
@@ -58,7 +57,7 @@ def chat(
     app_title: str = Body("RSRoute"),
     app_url: str = Body("https://www.rsroute.freedev.app/"),
     app_categories: Optional[List[str]] = Body(None),
-    max_retries: int = Body(2),
+    max_retries: int = Body(MAX_RETRIES),
     providers: Optional[Dict[Any, Any]] = Body(None),
     end_point: Optional[str] = Body(None),
 ):
@@ -147,7 +146,7 @@ def chat(
 
 @router.post("/agent")
 def agent(
-    query: Any = Body("Hello"),
+    query: Any = Body(QUERY),
     master_key: str = Body(""),
     model: str = Body(DEFAULT_OPENROUTER_MODEL),
     temperature: float = Body(TEMPERATURE),
@@ -155,7 +154,7 @@ def agent(
     app_title: str = Body("RSRoute"),
     app_url: str = Body("https://www.rsroute.freedev.app/"),
     app_categories: Optional[List[str]] = Body(None),
-    max_retries: int = Body(2),
+    max_retries: int = Body(MAX_RETRIES),
     providers: Optional[Dict[Any, Any]] = Body(None),
     end_point: Optional[str] = Body(None),
     tools_info: Optional[List[Dict[str, str]]] = Body(None),
