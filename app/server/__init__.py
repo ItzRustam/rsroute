@@ -8,6 +8,7 @@ from .gemini_route import router as g_route # gemini_route
 from .mistral_route import router as m_route # mistral_route
 from .groq_route import router as groq_route # groq_route
 from .openrouter_route import router as or_route # openrouter_route
+from .openai_route import router as openai_route # openai_route
 from fastapi import FastAPI
 
 
@@ -31,6 +32,9 @@ def create_server() -> FastAPI:
     OpenRouter: route to chat and run agents with OpenRouter
         chat: /v1/openrouter/chat
         agent: /v1/openrouter/agent
+    OpenAI: route to chat and run agents with OpenAI
+        chat: /v1/openai/chat
+        agent: /v1/openai/agent
 
     Returns
     -------
@@ -46,5 +50,6 @@ def create_server() -> FastAPI:
     server.include_router(m_route) # MistralAI Router Added
     server.include_router(groq_route) # Groq Router Added
     server.include_router(or_route) # OpenRouter Router Added
+    server.include_router(openai_route) # OpenAI Router Added
 
     return server # return FastAPI server.
