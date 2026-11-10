@@ -20,7 +20,7 @@ def test_mistral_agent(tools: list = None, api_key: str = FAKE_KEY):
         (False, message) — Unexpected exception or unexpected success.
     """
     try:
-        agent = MistralAgent(api_key=api_key, tools_info=tools)
+        agent = MistralAgent(api_key=api_key, tools_info=tools, max_retries=0)
     except InvalidRequest as IR:
         return True, str(IR)   # Expected — validation rejected bad input
     except Exception as E:
@@ -85,6 +85,7 @@ def case_valid_initialization():
             model="mistral-small-2603",
             temperature=0.5,
             max_tokens=1000,
+            max_retries=0,
             top_p=0.9,
             end_point="https://api.mistral.ai",
         )
@@ -92,6 +93,7 @@ def case_valid_initialization():
         assert params.get("model") == "mistral-small-2603", "model parameter mismatch"
         assert params.get("temperature") == 0.5, "temperature parameter mismatch"
         assert params.get("max_tokens") == 1000, "max_tokens parameter mismatch"
+        assert params.get("max_retries") == 0, "max_retries parameter mismatch"
         assert params.get("top_p") == 0.9, "top_p parameter mismatch"
         assert params.get("end_point") == "https://api.mistral.ai", "end_point parameter mismatch"
         assert params.get("binded_tools") == tool, "binded_tools parameter mismatch"

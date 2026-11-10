@@ -20,7 +20,7 @@ def test_openrouter_agent(tools: list = None, api_key: str = FAKE_KEY):
         (False, message) — Unexpected exception or unexpected success.
     """
     try:
-        agent = OpenRouterAgent(api_key=api_key, tools_info=tools)
+        agent = OpenRouterAgent(api_key=api_key, tools_info=tools, max_retries=0)
     except InvalidRequest as IR:
         return True, str(IR)   # Expected — validation rejected bad input
     except Exception as E:
@@ -88,7 +88,7 @@ def case_valid_initialization():
             app_title="TestApp",
             app_url="https://test.app",
             app_categories=["test"],
-            max_retries=3,
+            max_retries=0,
             providers={"order": ["OpenAI"]},
             end_point="https://openrouter.ai/api/v1",
             custom_arg="test_val",
@@ -100,7 +100,7 @@ def case_valid_initialization():
         assert params.get("app_title") == "TestApp", "app_title parameter mismatch"
         assert params.get("app_url") == "https://test.app", "app_url parameter mismatch"
         assert params.get("app_categories") == ["test"], "app_categories parameter mismatch"
-        assert params.get("max_retries") == 3, "max_retries parameter mismatch"
+        assert params.get("max_retries") == 0, "max_retries parameter mismatch"
         assert params.get("openrouter_provider") == {"order": ["OpenAI"]}, "openrouter_provider mismatch"
         assert params.get("end_point") == "https://openrouter.ai/api/v1", "end_point parameter mismatch"
         assert params.get("binded_tools") == tool, "binded_tools parameter mismatch"

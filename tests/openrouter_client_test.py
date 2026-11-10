@@ -9,7 +9,7 @@ from app.Errors import InvalidRequest
 def test_openrouter(KEY : str = None, query : str = None, real_api = False):
     # Model Initialize
     try:
-        model = ChatOpenRouter(api_key=KEY)
+        model = ChatOpenRouter(api_key=KEY, max_retries=0)
     except InvalidRequest as ir:
         return True, ir
     except Exception as e:

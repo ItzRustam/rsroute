@@ -19,6 +19,7 @@ from tests import (
     test_ddgs_web_search,
     test_groq_endpoints,
     test_openrouter_endpoints,
+    test_openai_endpoints,
     test_agent_endpoints,
 )
 from tests.gemini_agent_test import (
@@ -467,11 +468,12 @@ def base_estimator_testing():
     cases = [
         ("TestCase #1 - BaseChatModel & BaseAgentModel inheritance", test_base_estimator_inheritance),
         ("TestCase #2 - BaseChatModel validation & parameter methods", test_base_estimator_methods),
-        ("TestCase #3 - Agent classes tools_info validation (Gemini, Groq, Mistral, OpenRouter)", test_agent_classes_validation),
+        ("TestCase #3 - Agent classes tools_info validation (Gemini, Groq, Mistral, OpenRouter, OpenAI)", test_agent_classes_validation),
         ("TestCase #4 - DDGS web_search tool check", test_ddgs_web_search),
         ("TestCase #5 - Groq chat & parameters endpoints (/v1/groq/chat, /v1/groq/parameters)", test_groq_endpoints),
         ("TestCase #6 - OpenRouter chat & parameters endpoints (/v1/openrouter/chat, /v1/openrouter/parameters)", test_openrouter_endpoints),
-        ("TestCase #7 - Agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent, /v1/openrouter/agent)", test_agent_endpoints),
+        ("TestCase #7 - OpenAI chat, agent & parameters endpoints (/v1/openai/chat, /v1/openai/agent, /v1/openai/parameters)", test_openai_endpoints),
+        ("TestCase #8 - Agent endpoints (/v1/gemini/agent, /v1/groq/agent, /v1/mistral/agent, /v1/openrouter/agent, /v1/openai/agent)", test_agent_endpoints),
     ]
 
     passed = 0

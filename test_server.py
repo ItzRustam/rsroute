@@ -72,6 +72,7 @@ DATA = {"query" : "What is GitHub?",
         "temperature" : 0.7,
         "max_tokens": 2048, 
         "top_p": 1.0, 
+        "max_retries": 0,
         "end_point" : None,
         "thinking_level": None,
         "thinking_budget": None
@@ -84,6 +85,7 @@ DATA_WMK = {"query" : "Hello?",
         "temperature" : 0.7,
         "max_tokens": 2048, 
         "top_p": 1.0, 
+        "max_retries": 0,
         "end_point" : None, 
         "thinking_level": None,
         "thinking_budget": None}
@@ -95,6 +97,7 @@ AGENT_DATA = {
     "temperature": 0.7,
     "max_tokens": 2048,
     "top_p": 1.0,
+    "max_retries": 0,
     "end_point": None,
     "thinking_level": None,
     "thinking_budget": None,
@@ -108,6 +111,7 @@ AGENT_DATA_WMK = {
     "temperature": 0.7,
     "max_tokens": 2048,
     "top_p": 1.0,
+    "max_retries": 0,
     "end_point": None,
     "thinking_level": None,
     "thinking_budget": None,
@@ -119,6 +123,7 @@ END_POINTS : Dict[str, str] = {
     "mistral" : f"{URL}/v1/mistral",
     "groq" : f"{URL}/v1/groq",
     "openrouter" : f"{URL}/v1/openrouter",
+    "openai" : f"{URL}/v1/openai",
 }
 
 
@@ -141,6 +146,7 @@ class check_server:
     * MistralAI (Chat & Agent)
     * Groq (Chat & Agent)
     * OpenRouter (Chat & Agent)
+    * OpenAI (Chat & Agent)
     """
 
     @staticmethod
@@ -306,6 +312,51 @@ class check_server:
         return check_status(status_code=response.status_code), response.json()
 
     @staticmethod
+    def check_openai_with_key():
+        data = DATA.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "gpt-6-luna"
+        response = rq.post(url=f"{END_POINTS['openai']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openai_without_key():
+        data = DATA_WMK.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "gpt-6-luna"
+        response = rq.post(url=f"{END_POINTS['openai']}/chat", params=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openai_agent_with_key():
+        data = AGENT_DATA.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "gpt-6-luna"
+        response = rq.post(url=f"{END_POINTS['openai']}/agent", json=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openai_agent_without_key():
+        data = AGENT_DATA_WMK.copy()
+        del data["thinking_budget"]
+        del data["thinking_level"]
+        del data["top_p"]
+        data["model"] = "gpt-6-luna"
+        response = rq.post(url=f"{END_POINTS['openai']}/agent", json=data)
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
+    def check_openai_params():
+        response = rq.get(url=f"{END_POINTS['openai']}/parameters")
+        return check_status(status_code=response.status_code), response.json()
+
+    @staticmethod
     def check_root():
         response = rq.get(url=f"{URL}/")
         return check_status(status_code=response.status_code), response.json()
@@ -428,6 +479,33 @@ if __name__ == "__main__":
     status, output = check_server.check_openrouter_params()
     results.append(status)
     print("OpenRouter params:", status)
+    pprint(output)
+
+    # OpenAI Chat checks
+    status, output = check_server.check_openai_with_key()
+    results.append(status)
+    print("OpenAI Chat with key:", status)
+    pprint(output)
+
+    status, output = check_server.check_openai_without_key()
+    results.append(status)
+    print("OpenAI Chat without key:", status)
+    pprint(output)
+
+    # OpenAI Agent checks (using web_search tool with DDGS)
+    status, output = check_server.check_openai_agent_with_key()
+    results.append(status)
+    print("OpenAI Agent with key:", status)
+    pprint(output)
+
+    status, output = check_server.check_openai_agent_without_key()
+    results.append(status)
+    print("OpenAI Agent without key:", status)
+    pprint(output)
+
+    status, output = check_server.check_openai_params()
+    results.append(status)
+    print("OpenAI params:", status)
     pprint(output)
 
     all_passed = all(results)

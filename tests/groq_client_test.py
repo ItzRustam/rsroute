@@ -5,7 +5,7 @@ from app.Errors import InvalidRequest
 def test_groq(KEY : str = None, query : str = None, real_api = False):
     # Model Initlize
     try:
-        model = ChatGroq(api_key=KEY)
+        model = ChatGroq(api_key=KEY, max_retries=0)
 
     except InvalidRequest as ir:
         return True, ir

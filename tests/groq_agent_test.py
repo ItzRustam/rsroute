@@ -20,7 +20,7 @@ def test_groq_agent(tools: list = None, api_key: str = FAKE_KEY):
         (False, message) — Unexpected exception or unexpected success.
     """
     try:
-        agent = GroqAgent(api_key=api_key, tools_info=tools)
+        agent = GroqAgent(api_key=api_key, tools_info=tools, max_retries=0)
     except InvalidRequest as IR:
         return True, str(IR)   # Expected — validation rejected bad input
     except Exception as E:
@@ -85,12 +85,14 @@ def case_valid_initialization():
             model="openai/gpt-oss-120b",
             temperature=0.5,
             max_tokens=1000,
+            max_retries=0,
             end_point="https://api.groq.com/openai/v1",
         )
         params = agent.get_params()
         assert params.get("model") == "openai/gpt-oss-120b", "model parameter mismatch"
         assert params.get("temperature") == 0.5, "temperature parameter mismatch"
         assert params.get("max_tokens") == 1000, "max_tokens parameter mismatch"
+        assert params.get("max_retries") == 0, "max_retries parameter mismatch"
         assert params.get("end_point") == "https://api.groq.com/openai/v1", "end_point parameter mismatch"
         assert params.get("binded_tools") == tool, "binded_tools parameter mismatch"
         return True, "Valid initialization and params check passed"
