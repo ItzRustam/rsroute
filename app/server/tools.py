@@ -7,6 +7,8 @@
 from pydantic import BaseModel
 from typing import Optional, Any, Dict, List, Union
 from langchain.messages import AIMessage
+from dotenv import load_dotenv
+import os
 
 # NOTE: Do not use it directly, always make .copy() and then edit/send.
 PARAMS_INFO : Dict[str, str] = {
@@ -108,3 +110,21 @@ def convertResponse(response : AIMessage,
 
     # returning Dict
     return result.model_dump()
+
+def get_org_id():
+    """automatically pick OpenAI Org Id from .env"""
+    load_dotenv()
+
+    candidates = [
+        "org_id", "ORG_ID",
+        "organization_id", "ORGANIZATION_ID",
+        "openai_org_id", "OPENAI_ORG_ID"
+    ]
+
+    for candidate in candidates:
+        val = os.getenv(candidate)
+
+        if val:
+            return val
+
+    return None
