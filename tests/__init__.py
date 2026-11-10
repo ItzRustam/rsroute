@@ -20,6 +20,7 @@ from .base_estimator_test import (
     test_ddgs_web_search,
     test_groq_endpoints,
     test_openrouter_endpoints,
+    test_openai_endpoints,
     test_agent_endpoints,
 )
 
@@ -42,5 +43,6 @@ __all__ = [
     "test_ddgs_web_search",
     "test_groq_endpoints",
     "test_openrouter_endpoints",
+    "test_openai_endpoints",
     "test_agent_endpoints",
 ]

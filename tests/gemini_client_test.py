@@ -5,7 +5,7 @@ from app.Errors import InvalidRequest
 def test_gemini(KEY : str = None, query : str = None, real_api = False):
     # Model Initlize
     try:
-        model = ChatGemini(api_key=KEY)
+        model = ChatGemini(api_key=KEY, max_retries=0)
 
     except InvalidRequest as ir:
         return True, ir

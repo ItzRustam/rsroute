@@ -19,7 +19,7 @@ def test_gemini_agent(tools: list, api_key: str = FAKE_KEY):
         (False, message) — Unexpected exception or unexpected success.
     """
     try:
-        agent = GeminiAgent(api_key=api_key, tools_info=tools)
+        agent = GeminiAgent(api_key=api_key, tools_info=tools, max_retries=0)
     except InvalidRequest as IR:
         return True, str(IR)   # Expected — validation rejected bad input
     except Exception as E:
