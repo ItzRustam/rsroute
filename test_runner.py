@@ -12,6 +12,7 @@ from tests import test_mistral, test_mistral_agent
 from tests import test_gemini, test_gemini_agent
 from tests import test_groq, test_groq_agent
 from tests import test_openrouter, test_openrouter_agent
+from tests import test_openai, test_openai_agent
 from tests import (
     test_base_estimator_inheritance,
     test_base_estimator_methods,
@@ -73,6 +74,20 @@ from tests.openrouter_agent_test import (
     case_valid_initialization as or_case_valid_initialization,
     case_agent_inheritance as or_case_agent_inheritance,
     case_agent_methods as or_case_agent_methods,
+)
+from tests.openai_agent_test import (
+    case_tools_none as openai_case_tools_none,
+    case_tools_empty_list as openai_case_tools_empty_list,
+    case_tools_wrong_type_string as openai_case_tools_wrong_type_string,
+    case_tools_wrong_type_int as openai_case_tools_wrong_type_int,
+    case_tools_wrong_type_dict as openai_case_tools_wrong_type_dict,
+    case_tools_missing_description as openai_case_tools_missing_description,
+    case_tools_missing_name as openai_case_tools_missing_name,
+    case_tools_empty_dict_in_list as openai_case_tools_empty_dict_in_list,
+    case_api_key_none as openai_case_api_key_none,
+    case_valid_initialization as openai_case_valid_initialization,
+    case_agent_inheritance as openai_case_agent_inheritance,
+    case_agent_methods as openai_case_agent_methods,
 )
 from dotenv import load_dotenv
 load_dotenv()
@@ -463,6 +478,75 @@ def test_openrouter_agent_cases():
     return True
 
 
+def openai_testing():
+    FAKE_KEY = "sk-fake-openai-test-key"
+    print("=========== Running ChatOpenAI TestCases with Fake API ===========")
+
+    logger.info("TestCase #1 - KEY & query both None.")
+    val, result = test_openai()
+    logger.debug(f"case #1 result - {result}")
+    if not val:
+        logger.error("TestCase #1 Failed.")
+        return False
+
+    logger.info("TestCase #2 - query = None")
+    val, result = test_openai(KEY=FAKE_KEY)
+    logger.debug(f"case #2 result - {result}")
+    if not val:
+        logger.error("TestCase #2 Failed.")
+        return False
+
+    logger.info("TestCase #3 - valid value with real_api=False")
+    val, result = test_openai(KEY=FAKE_KEY, query="hey", real_api=False)
+    logger.debug(f"case #3 result - {result}")
+    if not val:
+        logger.error("TestCase #3 Failed.")
+        return False
+
+    logger.info("TestCase #4 - valid value with real_api=True with fake api")
+    val, result = test_openai(KEY=FAKE_KEY, query="hey", real_api=True)
+    logger.debug(f"case #4 result - {result}")
+    if val != False:
+        logger.error("TestCase #4 Failed.")
+        return False
+
+    print("=========== All Test Case Passed 4/4 ===========")
+    return True
+
+
+def test_openai_agent_cases():
+    print("=========== Running OpenAIAgent tools_info TestCases ===========")
+
+    cases = [
+        ("TestCase #1 - tools_info=None",                 openai_case_tools_none),
+        ("TestCase #2 - tools_info=[] (empty list)",      openai_case_tools_empty_list),
+        ("TestCase #3 - tools_info='search' (string)",    openai_case_tools_wrong_type_string),
+        ("TestCase #4 - tools_info=42 (int)",             openai_case_tools_wrong_type_int),
+        ("TestCase #5 - tools_info={} (bare dict)",       openai_case_tools_wrong_type_dict),
+        ("TestCase #6 - missing 'description' key",       openai_case_tools_missing_description),
+        ("TestCase #7 - missing 'name' key",              openai_case_tools_missing_name),
+        ("TestCase #8 - [{}] empty dict in list",         openai_case_tools_empty_dict_in_list),
+        ("TestCase #9 - api_key=None",                   openai_case_api_key_none),
+        ("TestCase #10 - Valid initialization & params",  openai_case_valid_initialization),
+        ("TestCase #11 - OpenAIAgent inheritance",       openai_case_agent_inheritance),
+        ("TestCase #12 - OpenAIAgent methods",           openai_case_agent_methods),
+    ]
+
+    passed = 0
+    for label, case_fn in cases:
+        logger.info(label)
+        val, result = case_fn()
+        logger.debug(f"Result: {result}")
+        if val:
+            passed += 1
+        else:
+            logger.error(f"{label} — FAILED: {result}")
+            return False
+
+    print(f"=========== All Test Cases Passed {passed}/{len(cases)} ===========")
+    return True
+
+
 def base_estimator_testing():
     print("=========== Running BaseChatModel, Agent Classes & Endpoints TestCases ===========")
     cases = [
@@ -499,10 +583,12 @@ def main():
     results.append(gemini_testing())      # Gemini Testing
     results.append(groq_testing())        # Groq Testing
     results.append(openrouter_testing())  # OpenRouter Testing
+    results.append(openai_testing())      # OpenAI Testing
     results.append(test_gemini_agent())   # GeminiAgent tools_info Testing
     results.append(test_groq_agent_cases()) # GroqAgent tools_info Testing
     results.append(test_mistral_agent_cases()) # MistralAgent tools_info Testing
     results.append(test_openrouter_agent_cases()) # OpenRouterAgent tools_info Testing
+    results.append(test_openai_agent_cases()) # OpenAIAgent tools_info Testing
     results.append(base_estimator_testing())  # BaseChatModel & Groq endpoints Testing
 
     return all(results) # Return False if any Test Case Failed

@@ -13,6 +13,8 @@ from .groq_agent_test import test_groq_agent
 from .mistral_agent_test import test_mistral_agent
 from .openrouter_agent_test import test_openrouter_agent
 from .openrouter_client_test import test_openrouter
+from .openai_client_test import test_openai
+from .openai_agent_test import test_openai_agent
 from .base_estimator_test import (
     test_base_estimator_inheritance,
     test_base_estimator_methods,
@@ -37,6 +39,8 @@ __all__ = [
     "test_mistral_agent",
     "test_openrouter_agent",
     "test_openrouter",
+    "test_openai",
+    "test_openai_agent",
     "test_base_estimator_inheritance",
     "test_base_estimator_methods",
     "test_agent_classes_validation",
