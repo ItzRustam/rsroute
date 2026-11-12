@@ -9,7 +9,7 @@ Building and maintaining **rsroute** takes a lot of time and effort! If this pro
 [![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-F16061?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/itzrustam)
 
 ## v1 Is out!
-**Guide: ** [RSRoute Docs](https://rsroute.freedev.app/guide/index.html?i=1)  
+**Guide:** [RSRoute Docs](https://rsroute.freedev.app/guide/index.html?i=1)  
 Currently supports 5 Providers:  
 * OpenAI
 * OpenRouter
